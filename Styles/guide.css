@@ -1,0 +1,124 @@
+:root {
+  --green6: #34d399;
+  --green8: #a7f3d0;
+  --light: #f8fafc;
+}
+
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background: var(--light);
+}
+
+.logo img {
+  height: 40px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: black;
+  padding: 8px 12px;
+}
+
+.nav-links .active a {
+  color: var(--green6);
+  font-weight: bold;
+}
+
+.menu-icon img {
+  height: 25px;
+  cursor: pointer;
+  display: none; /* shown only on mobile */
+}
+
+/* Guide session */
+.guide-session {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+}
+
+.filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Search box */
+.search-box {
+  padding: 0 30px 20px;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+/* Activities */
+.activities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+  padding: 20px 30px;
+}
+
+.activity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 15px;
+  border-radius: 25px;
+  background: var(--green8);
+  border: 2px solid var(--green8);
+  font-size: 14px;
+}
+
+/* Calm Sections (Cards) */
+.calm-sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+.calm-sections img {
+  width: 100%;
+  border-radius: 10px;
+  display: block;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .nav-links {
+    display: none; /* hide links on mobile */
+  }
+  .menu-icon {
+    display: block;
+  }
+}
