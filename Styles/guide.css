@@ -44,7 +44,7 @@
 .menu-icon img {
   height: 25px;
   cursor: pointer;
-  display: none; /* shown only on mobile */
+  display: block; 
 }
 
 /* Guide session */
@@ -116,9 +116,22 @@
 /* Responsive */
 @media (max-width: 768px) {
   .nav-links {
-    display: none; /* hide links on mobile */
+       display: none; /* hide links on mobile */
+    flex-direction: column;
+    gap: 15px;
+    position: absolute;
+    top: 70px;
+    right: 30px;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   }
   .menu-icon {
     display: block;
+    cursor: pointer;
+  }
+    .nav-links.active {
+    display: flex; /* show when menu is toggled */
   }
 }

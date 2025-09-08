@@ -18,9 +18,9 @@
       <li class="active"><a href="#">Features</a></li>
       <li><a href="pricing.html">Pricing</a></li>
       <li><a href="the_about.html">About Us</a></li>
-      <li><a href="#">Contact</a></li>
+      <li><a href="the_contact.html">Contact</a></li>
     </ul>
-    <div class="menu-icon">
+    <div class="menu-icon" id="menu-icon">
       <img src="https://i.postimg.cc/5yp2CRVk/Container.png" alt="Menu">
     </div>
   </nav>
@@ -56,10 +56,20 @@
     <a href="the_3.html"><img src="https://i.postimg.cc/Gt294dh2/State-Card-3.png" alt=""></a>
     <a href="the_4.html"><img src="https://i.postimg.cc/Sx0NhW8j/State-Card-4.png" alt=""></a>
     <a href="the_5.html"><img src="https://i.postimg.cc/m27hhXT7/State-Card-5.png" alt=""></a>
-    <a href="the.6.html"><img src="https://i.postimg.cc/65hwDD9b/State-Card-6.png" alt=""></a>
+    <a href="the_6.html"><img src="https://i.postimg.cc/65hwDD9b/State-Card-6.png" alt=""></a>
     <a href="the.7.html"><img src="https://i.postimg.cc/25ZtfZQj/State-Card-7.png" alt=""></a>
     <a href="the_8.html"><img src="https://i.postimg.cc/MKHdSBxk/State-Card-8.png" alt=""></a>
   </section>
+
+  <!-- ✅ JavaScript -->
+  <script>
+    const menuIcon = document.getElementById("menu-icon");
+    const navLinks = document.querySelector(".nav-links");
+
+    menuIcon.addEventListener("click", () => {
+      navLinks.classList.toggle("active");
+    });
+  </script>
 
 </body>
 </html>
