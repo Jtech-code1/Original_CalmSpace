@@ -284,8 +284,21 @@ body{
 
   /* Navbar mobile */
   .calmspace_list {
-    display: none; /* hide full menu */
+    /* display: none; */
+    
+    display: none; 
+    flex-direction: column;
+    background: white;
+    position: absolute;
+    top: 70px; 
+    right: 20px;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    z-index: 1000;
+  
   }
+
 
   .calmspace_logo {
     position: relative;
@@ -307,6 +320,20 @@ body{
     margin-bottom: 0px; 
     position: relative;
     z-index: 1;
+  }
+   .calmspace_list.active {
+    display: block;
+  }
+
+  .calmspace_list ul {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .calmspace_bar {
+    display: block; /* show hamburger */
+    cursor: pointer;
   }
 }
 
