@@ -32,6 +32,19 @@ body{
     background-color: var(--greengrey);
     padding:20px 40px;
 }
+/* Initial hidden state */
+.reveal {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: all 0.8s ease-in-out;
+}
+
+/* Visible state */
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .click img{
     width:60px;
 }

@@ -4,21 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Contact Page</title>
-    <link rel="stylesheet" href="Styles/contact.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" 
-      integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ=="
-      crossorigin="anonymous" referrerpolicy="no-referrer"  />
+    <link rel="stylesheet" href="Styles/contact.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
   </head>
   <body>
+    <!-- Navbar -->
     <section class="hero">
-      <!-- Navbar -->
       <nav>
         <div class="logo">
           <img src="https://i.postimg.cc/T2pZPb3b/Calamspacexxxhdpi-1.png" alt="logo" />
           Calmspace
         </div>
 
-        <!-- nav-links wrapper -->
+        <!-- nav-links -->
         <ul class="nav-links">
           <li><a href="landing.html">Home</a></li>
           <li><a href="features.html">Features</a></li>
@@ -43,55 +44,66 @@
 
         <!-- Hamburger -->
         <div class="hamburger" id="menu-icon">
-          <i class="fa-solid fa-bars" style="color: #251f07;"></i>
+          <i class="fa-solid fa-bars"></i>
         </div>
       </nav>
     </section>
 
-    <!-- Our Team -->
+    <!-- Contact Heading -->
     <div class="our-team">
       <div class="team">
-        <h1>Get in touch with our team<br><span>caring team, just a message away</span> </h1>
+        <h1>
+          Get in touch with our team <br />
+          <span>Our caring team is just a message away</span>
+        </h1>
       </div>
     </div>
 
+    <!-- Map -->
     <div class="map">
       <img src="https://i.postimg.cc/3Rd1BgyQ/map.png" alt="flag" />
       <i class="fa-solid fa-circle"></i>
     </div>
 
-    <!--form-->
+    <!-- Contact Form -->
     <div class="form-container">
       <form>
-        <label for="fullname">Fullname</label>
-        <input type="text" id="fullname" placeholder="Enter your fullname here">
+        <label for="fullname">Full Name</label>
+        <input type="text" id="fullname" placeholder="Enter your full name" />
 
         <label for="email">Email</label>
-        <input type="email" id="email" placeholder="Enter your email here">
+        <input type="email" id="email" placeholder="Enter your email" />
 
-        <label for="phone">Phone number</label>
+        <label for="phone">Phone Number</label>
         <div class="phone-group">
           <select>
             <option>+1</option>
             <option>+44</option>
             <option>+234</option>
-          </select> 
-          <input type="tel" id="phone" placeholder="+ (669) 123 4245">
+          </select>
+          <input type="tel" id="phone" placeholder="+ (669) 123 4245" />
         </div>
 
         <label for="message">Message</label>
         <textarea id="message" placeholder="Enter your message here"></textarea>
+
+        <button type="submit" class="btn-submit">Send Message</button>
       </form>
     </div>
 
-    <!--faq-->
+    <!-- FAQ Section -->
     <section class="faq-section">
-      <h2>Frequently asked questions (FAQs)</h2>
+      <h2>Frequently Asked Questions (FAQs)</h2>
+
       <div class="faq">
         <div class="faq-number">1</div>
         <div class="faq-content">
           <h3>What is CalmSpace?</h3>
-          <p>CalmSpace is a mental wellness app designed to help you manage stress, improve focus, and build healthier habits through guided exercises, mindfulness tools, and expert resources.</p>
+          <p>
+            CalmSpace is a mental wellness app designed to help you manage stress,
+            improve focus, and build healthier habits through guided exercises,
+            mindfulness tools, and expert resources.
+          </p>
         </div>
       </div>
 
@@ -99,7 +111,11 @@
         <div class="faq-number">2</div>
         <div class="faq-content">
           <h3>Is my data safe on CalmSpace?</h3>
-          <p>Yes, your privacy is our top priority. All personal information is encrypted and securely stored. We never share your data without your consent.</p>
+          <p>
+            Yes, your privacy is our top priority. All personal information is
+            encrypted and securely stored. We never share your data without your
+            consent.
+          </p>
         </div>
       </div>
 
@@ -107,7 +123,11 @@
         <div class="faq-number">3</div>
         <div class="faq-content">
           <h3>Do I need to pay to use CalmSpace?</h3>
-          <p>CalmSpace offers both free features and premium plans. Free users can access basic exercises and resources, while premium members unlock full programs, personalized guidance, and advanced tracking.</p>
+          <p>
+            CalmSpace offers both free features and premium plans. Free users can
+            access basic exercises and resources, while premium members unlock full
+            programs, personalized guidance, and advanced tracking.
+          </p>
         </div>
       </div>
 
@@ -115,12 +135,15 @@
         <div class="faq-number">4</div>
         <div class="faq-content">
           <h3>Can I use CalmSpace without internet access?</h3>
-          <p>Yes, many exercises and resources can be downloaded for offline use so you can take CalmSpace with you anywhere.</p>
+          <p>
+            Yes, many exercises and resources can be downloaded for offline use so
+            you can take CalmSpace with you anywhere.
+          </p>
         </div>
       </div>
     </section>
 
-    <!-- script -->
+    <!-- Script -->
     <script>
       const menuIcon = document.getElementById("menu-icon");
       const navLinks = document.querySelector(".nav-links");
