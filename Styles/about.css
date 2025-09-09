@@ -83,6 +83,69 @@ ul li a.active {
   height: 25px;
   cursor: pointer;
 }
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(50px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Classes */
+.fade-in {
+  animation: fadeIn 1s ease-out both;
+}
+
+.slide-up {
+  animation: slideUp 1s ease-out both;
+}
+
+.zoom-in {
+  animation: zoomIn 1s ease-out both;
+}
+
+/* Hover Effects */
+.card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0px 8px 20px rgba(0,0,0,0.2);
+}
+
+.team-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.team-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 6px 15px rgba(0,0,0,0.15);
+}
+
+.box {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 20px;
+}
+.box:hover {
+  transform: translateY(-8px);
+  box-shadow: 0px 6px 15px rgba(0,0,0,0.25);
+}
+
+/* Navbar slide for mobile */
+nav ul {
+  transition: all 0.4s ease;
+}
+nav ul.active {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
 
 .icons {
   cursor: pointer;
