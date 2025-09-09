@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Breathing Exercises</title>
+  <link rel="stylesheet" href="Styles/the_breathing.css">
+</head>
+<body>
+
+  <div class="container">
+    <!-- Play Button -->
+    <a href="#" onclick="playAudio(event)" class="play-btn">
+      <img src="https://i.postimg.cc/0QLQXXML/breathing.jpg" alt="Play Breathing Music">
+    </a>
+
+    <!-- Hidden Audio -->
+    <audio id="myAudio">
+      <source src="https://living-jade-ktakggbrow.edgeone.app/relaxing-breathing-sound.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Breathing Guide -->
+    <div class="practice">
+      <h2>Basic Deep Breathing</h2>
+      <p>1. <b>Sit Comfortably</b> with your back straight and shoulders relaxed.</p>
+      <p>2. <b>Inhale</b> slowly through your nose for <b>4 seconds</b>, filling your belly with air.</p>
+      <p>3. <b>Hold</b> your breath gently for <b>2 seconds</b>.</p>
+      <p>4. <b>Exhale</b> slowly through your mouth for <b>6 seconds</b>, releasing all tension.</p>
+      <p>5. Repeat this cycle for <b>5–10 minutes</b>.</p>
+
+      <div class="practice1">
+        <p><b>Benefits:</b> Deep breathing calms your nervous system, lowers blood pressure, and promotes relaxation.</p>
+      </div>
+    </div>
+
+    <!-- More Breathing Techniques -->
+    <div class="tips">
+      <h2>Other Breathing Techniques</h2>
+
+      <div class="tip-card">
+        <h3>🌬️ Box Breathing</h3>
+        <p>Inhale for 4 seconds → Hold 4 seconds → Exhale 4 seconds → Hold 4 seconds.</p>
+        <p><b>Benefit:</b> Improves focus, reduces anxiety, and resets your stress response.</p>
+      </div>
+
+      <div class="tip-card">
+        <h3>🌿 Alternate Nostril Breathing</h3>
+        <p>Close your right nostril and inhale through the left → switch nostrils and exhale → repeat on the other side.</p>
+        <p><b>Benefit:</b> Balances energy, increases mental clarity, and supports relaxation.</p>
+      </div>
+
+      <div class="tip-card">
+        <h3>🔥 Breath of Fire</h3>
+        <p>Take short, powerful exhales through the nose while keeping inhales passive. Maintain a steady rhythm.</p>
+        <p><b>Benefit:</b> Energizes the body, improves lung capacity, and detoxifies.</p>
+      </div>
+
+      <div class="tip-card">
+        <h3>😴 4-7-8 Breathing</h3>
+        <p>Inhale for 4 seconds → Hold for 7 seconds → Exhale for 8 seconds. Repeat 4 cycles.</p>
+        <p><b>Benefit:</b> Promotes deep relaxation and helps improve sleep quality.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function playAudio(event) {
+      event.preventDefault(); 
+      const audio = document.getElementById("myAudio");
+
+      if (audio.paused) {
+        audio.play();
+      } else {
+        audio.pause();
+      }
+    }
+  </script>
+
+</body>
+</html>

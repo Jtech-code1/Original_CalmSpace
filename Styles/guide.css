@@ -1,6 +1,13 @@
 :root {
-  --green6: #34d399;
-  --green8: #a7f3d0;
+  --green2: #065546;
+    --green3: #047857;
+    --green4: #059669;
+    --green5: #10b981;
+    --green6: #34d399;
+    --green7: #6ee7b7;
+    --green8: #a7f3d0;
+    --green:#dde7e0;
+    --green9:#F3F8F5;
   --light: #f8fafc;
 }
 
@@ -95,6 +102,10 @@
   background: var(--green8);
   border: 2px solid var(--green8);
   font-size: 14px;
+}
+.activity a{
+  text-decoration:none;
+  color:black;
 }
 
 /* Calm Sections (Cards) */
