@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5000/api/auth" || "https://calmspace-api.onrender.com/api/auth";
+const API_URL = "https://calmspace-api.onrender.com/api/auth" || "http://localhost:5000/api/auth";
 
 // Handle login form submission
 document.getElementById("loginForm").addEventListener("submit", async (e) => {
