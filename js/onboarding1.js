@@ -1,4 +1,4 @@
-const API_URL = "https://calmspace-api.onrender.com/api/auth" || "http://localhost:5000/api/auth";
+const API_URL = "https://calmspace-api.onrender.com/api/auth" ;
 
 // Handle token from Google OAuth redirect
 document.addEventListener('DOMContentLoaded', function() {
