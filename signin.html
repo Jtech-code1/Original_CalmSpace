@@ -35,22 +35,23 @@
         <div class="sections sig">
             <h1 class="start_text1">Sign In<br>Welcome back! </h1>
             <p>What are we doing today?</p>
-            <form action="">
-                <!-- <label for="">Fullname</label><br>
-                <input type="text" name="" id="" placeholder="Enter your text here" required><br><br><br> -->
-                <label for="">Email</label><br>
-                <input type="text" name="" id="" placeholder="John Corner" required><br><br><br>
-                <label for="password">Password</label>
-<div class="password-container">
-  <input type="password" id="password" placeholder="******" required>
-  
-  <!-- Eye icon -->
-  <span class="toggle-icon" onclick="togglePassword()">👁️</span>
-</div><br><br>
-<input type="checkbox" name=" " id="">
-<label for="">Remember me</label><br>
+            <!-- Changed form  -->
+            <form id="loginForm">
+              <label for="email">Email</label><br>
+              <input type="text" id="email" placeholder="Enter your email" required><br><br><br>
 
-<a href="the_about.html"><input class="create_button" type="button" value="Sign in"></a><br><br>
+              <label for="password">Password</label>
+              <div class="password-container">
+                <input type="password" id="password" placeholder="******" required>
+                <span class="toggle-icon" onclick="togglePassword()">👁️</span>
+              </div><br><br>
+
+              <input type="checkbox" id="rememberMe">
+              <label for="rememberMe">Remember me</label><br>
+
+              <button type="submit" class="create_button">Sign in</button><br><br>
+            </form>
+
 <p>Don't remember your password? <a href="#">Forget password</a></p>
 
 <div class="divider">
@@ -59,7 +60,7 @@
 </div>
 
 <button class="google-btn">
-   <a href="#"><img src="https://i.postimg.cc/cJbXJxFJ/googlr-removebg-preview.png" alt="" style="height:30px"> <span>Continue with Google
+   <a href="https://calmspace-api.onrender.com/api/auth/google"><img src="https://i.postimg.cc/cJbXJxFJ/googlr-removebg-preview.png" alt="" style="height:30px"> <span>Continue with Google
 </span> </a> 
 </button>
 <div class="sign_below">
@@ -77,8 +78,8 @@
     }
   }
 </script>
+<script src="js/signin.js"></script>
 
-            </form>
         </div>
 
     </div>

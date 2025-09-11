@@ -34,11 +34,12 @@
         </div>
         <div class="sections sig">
             <h1 class="start_text1">Sign Up</h1>
-            <form action="">
+            <!-- Add id to the form registerForm and to the fullname and email input button -->
+            <form action="" id="registerForm"> 
                 <label for="">Fullname</label><br>
-                <input type="text" name="" id="" placeholder="Enter your text here" required><br><br><br>
+                <input type="text" name="" id="fullName" placeholder="Enter your text here" required><br><br><br>
                 <label for="">Email</label><br>
-                <input type="text" name="" id="" placeholder="Enter your text here" required><br><br><br>
+                <input type="text" name="" id="email" placeholder="Enter your text here" required><br><br><br>
                 <label for="password">Password</label><br>
 <div class="password-container">
   <input type="password" id="password" placeholder="Enter your password" required>
@@ -46,8 +47,10 @@
   <!-- Eye icon -->
   <span class="toggle-icon" onclick="togglePassword()">👁️</span>
 </div><br><br><br>
-
-<a href="#"><input class="create_button" type="button" value="Create Account"></a><br><br>
+<!-- Removed the anchor button and changed the button type to submit -->
+<input class="create_button" type="submit" value="Create Account"><br><br>
+<!-- The form should close here -->
+</form>
 
 <div class="divider">
     Or
@@ -55,7 +58,7 @@
 </div>
 
 <button class="google-btn">
-   <a href="#"><img src="https://i.postimg.cc/cJbXJxFJ/googlr-removebg-preview.png" alt="" style="height:30px"> <span>Continue with Google
+   <a href="https://calmspace-api.onrender.com/api/auth/google"><img src="https://i.postimg.cc/cJbXJxFJ/googlr-removebg-preview.png" alt="" style="height:30px"> <span>Continue with Google
 </span> </a> 
 </button>
 <div class="sign_below">
@@ -73,8 +76,8 @@
     }
   }
 </script>
+<script src="js/signup.js"></script>
 
-            </form>
         </div>
 
     </div>

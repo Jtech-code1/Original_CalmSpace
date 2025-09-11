@@ -16,6 +16,7 @@ body {
   color: var(--primary-color);
   display: flex;
   flex-direction: column;
+  overflow-x: clip;
 }
 
 /* Background */
