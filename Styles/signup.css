@@ -130,7 +130,7 @@ input[type=text],
 }
 
 /* ===== GOOGLE BUTTON ===== */
-.google-btn{
+/* .google-btn{
     width:100%;
     background-color: white;
     border:2px solid var(--green7);
@@ -151,7 +151,29 @@ input[type=text],
 .google-btn span{
     color: var(--green7);
     font-size:15px;
+} */
+
+.google-btn {
+    width: 95%;
+    background-color: white;
+    border: 2px solid var(--green7);
+    cursor: pointer;
+    border-radius: 5px;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;  /* ensures link looks like button */
 }
+
+.google-btn span {
+    color: var(--green7);
+    font-size: 15px;
+}
+
+
+
 
 .sign_below p{
     text-align:center;
