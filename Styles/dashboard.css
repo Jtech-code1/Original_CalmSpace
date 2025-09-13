@@ -1,0 +1,233 @@
+:root {
+  --green5: #10b981;
+  --green7: #6ee7b7;
+  --light: #f8fafc;
+}
+
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+body {
+  background: #f6fbf7;
+  color: #333;
+}
+
+/* Layout */
+.container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  background: #dff0e3;
+  width: 240px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sidebar .logo {
+  font-weight: bold;
+  margin-bottom: 2rem;
+}
+
+.sidebar ul {
+  list-style: none;
+}
+
+.sidebar ul li {
+  padding: 0.75rem 0;
+  cursor: pointer;
+}
+
+.sidebar ul li.active {
+  background: #8bcba7;
+  color: #fff;
+  border-radius: 6px;
+  padding-left: 10px;
+}
+
+#feat a {
+  text-decoration: none;
+  color: var(--green5);
+}
+
+.signout {
+  margin-top: 2rem;
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.signout a {
+  text-decoration: none;
+  font-weight: 400;
+  color: #333;
+}
+
+.main {
+  flex: 1;
+  padding: 2rem;
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+/* Cards */
+.card {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+h2, h3 {
+  margin-bottom: 0.75rem;
+}
+
+ul li {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+/* Quote Section */
+.quote {
+  grid-column: span 2;
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* Activities + Mood Tracker */
+.activities, .mood-tracker {
+  grid-column: span 2;
+}
+
+.mood-tracker {
+  position: relative;
+}
+
+.mood-tracker::before {
+  content: "😡 😕 🙂 😀 😍";
+  position: absolute;
+  left: -30px;
+  top: 60px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-size: 18px;
+  line-height: 2.5;
+}
+
+.activities p {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: #4a4a4a;
+}
+
+.filters {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.filters button {
+  border: 1px solid #ccc;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  background: #f8f8f8;
+  cursor: pointer;
+}
+
+.filters button.active {
+  background: #8bcba7;
+  color: white;
+  border: none;
+}
+
+/* Chart containers */
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 300px;
+}
+
+#moodChart, #activityChart {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Calendar + Sessions */
+.calendar-sessions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.calendar, .sessions {
+  flex: 1;
+  min-width: 250px;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .sidebar {
+    width: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .main {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+
+  .activities, .mood-tracker {
+    grid-column: span 1;
+  }
+
+  .mood-tracker::before {
+    font-size: 14px;
+    left: -20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .filters {
+    justify-content: center;
+  }
+
+  h2, h3 {
+    font-size: 1.1rem;
+  }
+
+  body {
+    font-size: 14px;
+  }
+}
