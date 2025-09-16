@@ -13,10 +13,12 @@
       <div class="logo">
         <img src="https://i.postimg.cc/Kvg2rtgc/Calmspace-Logo.png" alt="Calmspace Logo">
         <h2>Calmspace</h2>
+        <!-- Hamburger Button -->
+        <button class="hamburger" id="menuToggle">☰</button>
       </div>
 
       <nav>
-        <ul>
+        <ul id="menuList">
           <li class="active">Dashboard</li>
           <li><a href="the_guide.html"><img src="https://i.postimg.cc/RhSnfz9j/application.png" alt="">Features</a></li>
           <li><a href="pricing.html"><img src="https://i.postimg.cc/8CScWHPW/coin.png" alt="">Pricing</a></li>
@@ -108,5 +110,15 @@
   <!-- Chart.js and dashboard logic -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="js/dashboard.js"></script>
+
+  <!-- Toggle Menu Script -->
+  <script>
+    const menuToggle = document.getElementById("menuToggle");
+    const menuList = document.getElementById("menuList");
+
+    menuToggle.addEventListener("click", () => {
+      menuList.classList.toggle("show");
+    });
+  </script>
 </body>
 </html>
