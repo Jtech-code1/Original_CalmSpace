@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calmspace Dashboard</title>
-  <link rel="stylesheet" href="dashboard.css">
+  <link rel="stylesheet" href="Styles/dashboard.css">
 </head>
 <body>
   <div class="container">
@@ -13,14 +13,12 @@
       <div class="logo">
         <img src="https://i.postimg.cc/Kvg2rtgc/Calmspace-Logo.png" alt="Calmspace Logo">
         <h2>Calmspace</h2>
+        <!-- Hamburger Button -->
+        <button class="hamburger" id="menuToggle">☰</button>
       </div>
 
-      <!-- Hamburger -->
-      <button class="hamburger" id="hamburger">&#9776;</button>
-
-      <!-- Navigation -->
       <nav>
-        <ul>
+        <ul id="menuList">
           <li class="active">Dashboard</li>
           <li><a href="the_guide.html"><img src="https://i.postimg.cc/RhSnfz9j/application.png" alt="">Features</a></li>
           <li><a href="pricing.html"><img src="https://i.postimg.cc/8CScWHPW/coin.png" alt="">Pricing</a></li>
@@ -113,13 +111,13 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="js/dashboard.js"></script>
 
-  <!-- Hamburger Toggle Script -->
+  <!-- Toggle Menu Script -->
   <script>
-    const hamburger = document.getElementById("hamburger");
-    const navList = document.querySelector(".sidebar nav ul");
+    const menuToggle = document.getElementById("menuToggle");
+    const menuList = document.getElementById("menuList");
 
-    hamburger.addEventListener("click", () => {
-      navList.classList.toggle("show");
+    menuToggle.addEventListener("click", () => {
+      menuList.classList.toggle("show");
     });
   </script>
 </body>
