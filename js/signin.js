@@ -22,7 +22,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
         localStorage.setItem("user", JSON.stringify(data.user));
 
         alert("Login successful! Redirecting...");
-        window.location.href = "the_guide.html"; // main app page
+        window.location.href = "dashboard.html"; // main app page
         } else {
         // ❌ Handle specific cases
         if (data.msg?.toLowerCase().includes("not found")) {

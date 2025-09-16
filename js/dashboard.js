@@ -1,3 +1,6 @@
+const API_URL = "https://calmspace-api.onrender.com/api/auth";
+
+
 document.addEventListener("DOMContentLoaded", () => {
   // Activity Chart (Bubble Style)
   new Chart(document.getElementById("activityChart"), {
@@ -68,4 +71,52 @@ document.addEventListener("DOMContentLoaded", () => {
       plugins: { legend: { display: false } }
     }
   });
+});
+
+// Fetch and display user nickname
+document.addEventListener("DOMContentLoaded", async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        // No token, redirect to sign-in
+        window.location.href = 'signin.html';
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_URL}/me`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!res.ok) {
+            throw new Error('Failed to fetch user data');
+        }
+
+        const data = await res.json();
+        const nickname = data.nickname || 'User';
+        document.getElementById('userNickname').textContent = nickname;
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+        alert('Session expired. Please sign in again.');
+        window.location.href = 'signin.html';
+    }
+});
+
+
+// Handle logout
+document.getElementById("logoutBtn").addEventListener("click", () => {
+    // Clear token from localStorage
+    localStorage.removeItem("token");
+
+    // Optional: also call backend logout route if you want
+    fetch(`${API_URL}/logout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+    }).catch(err => console.error("Logout error:", err));
+
+    // Redirect to signin page
+    window.location.href = "signin.html";
 });
