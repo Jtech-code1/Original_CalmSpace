@@ -24,6 +24,11 @@ body {
   background: #f9fdfb;
   color: #333;
   line-height: 1.6;
+  overflow-x: hidden;   /* 🔑 Prevent horizontal scroll */
+}
+img {
+  max-width: 100%;      /* 🔑 Make all images responsive */
+  height: auto;
 }
 #dowg a{
   color:var(--green4);
@@ -46,9 +51,9 @@ body {
   padding: 0 1rem;
 }
 
-.logo {
-  color: #2a8d67;
-  font-weight: bold;
+.logo img {
+  max-height: 60px;
+  width: auto;
 }
 
 .nav-links {
@@ -61,10 +66,6 @@ body {
   text-decoration: none;
   color: #333;
   font-weight: 600;
-}
-
-#dowg a {
-  color: var(--green4);
 }
 
 /* Hamburger */
@@ -120,6 +121,7 @@ body {
   border-radius: 10px;
   padding: 1.5rem;
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  overflow-x: hidden; /* safety */
 }
 
 /* Buttons */
@@ -133,9 +135,6 @@ body {
   cursor: pointer;
   margin-top: 1rem;
   font-weight: 600;
-}
-#emma{
-  border-radius:100px;
 }
 .btn:hover {
   background: #256c52;
@@ -162,6 +161,7 @@ body {
   display: flex;
   align-items: center;
   margin: 0.5rem 0;
+  flex-wrap: wrap; /* allow wrapping on small screens */
 }
 .entries img {
   border-radius: 6px;
@@ -177,7 +177,8 @@ body {
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 .post img {
-  width: 100%;
+  width: 100%;    /* responsive */
+  max-width: 100%;
   border-radius: 6px;
   margin: 0.5rem 0;
 }
@@ -211,12 +212,13 @@ body {
     flex-direction: column;
     position: absolute;
     top: 70px;
-    right: 20px;
+    right: 10px;   /* tighter to avoid overflow */
     background: #e6f4ee;
     padding: 1rem;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    width: 200px;
+    width: 180px;
+    max-width: 90vw;  /* 🔑 avoid overflow */
   }
 
   .nav-links li {
