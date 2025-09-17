@@ -1,4 +1,21 @@
+:root{
+    --green1: #064e3b;
+    --green2: #065546;
+    --green3: #047857;
+    --green4: #059669;
+    --green5: #10b981;
+    --green6: #34d399;
+    --green7: #6ee7b7;
+    --green8: #a7f3d0;
+    --green:#dde7e0;
+    --green9:#F3F8F5;
+    --lightblack:#F8FAFC;
+    --greengrey:#E1F0E6;
+}
+
+
 /* Reset */
+
 * {
   margin: 0;
   padding: 0;
@@ -9,6 +26,9 @@ body {
   background: #f9fdfb;
   color: #333;
   line-height: 1.6;
+}
+#dowg a{
+  color:var(--green4);
 }
 
 /* Navbar */
@@ -71,6 +91,9 @@ body {
   max-width: 1200px;
   margin: auto;
   padding: 2rem 1rem;
+}
+.hero-content h2{
+  color:black;
 }
 .grid-2 {
   display: grid;
