@@ -110,13 +110,17 @@ body {
 /* Buttons */
 .btn {
   display: inline-block;
-  background: #2a8d67;
+  background: var(--green7);
   color: #fff;
   padding: 0.6rem 1.2rem;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   margin-top: 1rem;
+  font-weight: 600;
+}
+#emma{
+  border-radius:100px;
 }
 .btn:hover {
   background: #256c52;
