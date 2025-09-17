@@ -10,19 +10,28 @@
   <!-- Navbar -->
   <header class="navbar">
     <div class="container nav-content">
-      <h1 class="logo"><img src="https://i.postimg.cc/N0tn5L3x/Frame-1984078010.png" alt="" style="height:60px;"></h1>
+      <!-- Logo -->
+      <h1 class="logo">
+        <img src="https://i.postimg.cc/N0tn5L3x/Frame-1984078010.png" alt="Calmspace Logo" style="height:60px;">
+      </h1>
+
+      <!-- Navigation -->
       <nav>
-        <ul class="nav-links">
+        <ul class="nav-links" id="nav-links">
           <li><a href="landing.html">Home</a></li>
-          <li id="dowg"><a href="features.html"> Features</a></li>
+          <li id="dowg"><a href="features.html">Features</a></li>
           <li><a href="pricing.html">Pricing</a></li>
           <li><a href="the_about.html">About Us</a></li>
           <li><a href="the_contact.html">Contact</a></li>
-          <li><a href=""><img src="https://i.postimg.cc/vHF83tf8/Container.png" alt=""></a></li>
+          <li><a href="#"><img src="https://i.postimg.cc/vHF83tf8/Container.png" alt=""></a></li>
         </ul>
       </nav>
+
+      <!-- Hamburger Button (mobile only) -->
+      <div class="hamburger" id="hamburger">☰</div>
     </div>
   </header>
+
 
   <!-- Hero -->
   <section class="hero">
@@ -72,28 +81,27 @@
     <div class="card">
       <h3>Recent Mood Entries</h3>
       <ul class="entries">
-  <li>
-    <a href="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" target="_blank">
-      <img src="https://i.postimg.cc/6pVHp4x5/322808868085ba515cabac19678eaebd60e04ad9.jpg" alt="Mood" style="height:200px;">
-    </a>
-    <span>Morning <br>Mindfulness <br>Emma <br>Wilson .15min</span>
-  </li>
+        <li>
+          <a href="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" target="_blank">
+            <img src="https://i.postimg.cc/6pVHp4x5/322808868085ba515cabac19678eaebd60e04ad9.jpg" alt="Mood" style="height:200px;">
+          </a>
+          <span>Morning <br>Mindfulness <br>Emma <br>Wilson .15min</span>
+        </li>
 
-  <li>
-    <a href="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" target="_blank">
-      <img src="https://i.postimg.cc/26YTRzKL/60f6b65c93d9499ac0ce229cd57b5a4566c52a6d.jpg" alt="Mood" style="height:250px">
-    </a>
-    <span>Stress Relief <br>Breathing <br>Michael Chen .10min</span>
-  </li>
+        <li>
+          <a href="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" target="_blank">
+            <img src="https://i.postimg.cc/26YTRzKL/60f6b65c93d9499ac0ce229cd57b5a4566c52a6d.jpg" alt="Mood" style="height:250px">
+          </a>
+          <span>Stress Relief <br>Breathing <br>Michael Chen .10min</span>
+        </li>
 
-  <li>
-    <a href="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" target="_blank">
-      <img src="https://i.postimg.cc/HLgbj64f/bc95df04cea1c9dbfcdbab434c3bc1ea7af7f7ca.jpg" alt="Mood" style="height:200px;width:170px">
-    </a>
-    <span>Gratitude <br>Journaling <br>Sarah Johnson 20 min</span>
-  </li>
-</ul>
-
+        <li>
+          <a href="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" target="_blank">
+            <img src="https://i.postimg.cc/HLgbj64f/bc95df04cea1c9dbfcdbab434c3bc1ea7af7f7ca.jpg" alt="Mood" style="height:200px;width:170px">
+          </a>
+          <span>Gratitude <br>Journaling <br>Sarah Johnson 20 min</span>
+        </li>
+      </ul>
       <button class="btn">View all sessions</button>
     </div>
     <div class="card">
@@ -171,5 +179,14 @@
       </div>
     </div>
   </footer>
+
+  <script>
+    const hamburger = document.getElementById("hamburger");
+    const navLinks = document.getElementById("nav-links");
+
+    hamburger.addEventListener("click", () => {
+      navLinks.classList.toggle("show");
+    });
+  </script>
 </body>
 </html>
