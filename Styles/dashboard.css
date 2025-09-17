@@ -34,10 +34,17 @@ body {
   justify-content: space-between;
 }
 
+/* Sidebar header: logo left, hamburger right */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
 .logo {
   display: flex;
   align-items: center;
-  margin-bottom: 2rem;
   gap: 10px;
 }
 
@@ -54,11 +61,11 @@ body {
 /* Hamburger */
 .hamburger {
   display: none;
-  font-size: 24px;
+  font-size: 26px;
   background: none;
   border: none;
   cursor: pointer;
-  margin-left: auto;
+  color: #333;
 }
 
 /* Sidebar nav */
@@ -149,13 +156,11 @@ h2, h3 {
 
   .sidebar {
     width: 100%;
-    flex-direction: column;
-    align-items: flex-start;
     padding: 1rem;
   }
 
   .hamburger {
-    display: block;
+    display: block; /* ✅ visible only on mobile */
   }
 
   .sidebar nav ul {
