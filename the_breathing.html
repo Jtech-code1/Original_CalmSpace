@@ -3,77 +3,93 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Breathing Exercises</title>
+  <title>Merged Breathing Practice</title>
   <link rel="stylesheet" href="Styles/the_breathing.css">
+  <style>
+    /* Make both images look clickable */
+    .container img {
+      cursor: pointer;
+      display: block;
+      margin: 20px auto;
+      max-width: 90%;
+    }
+
+    /* Space between the two containers */
+    .container {
+      margin-bottom: 50px;
+    }
+  </style>
 </head>
 <body>
 
+  <!-- ===== First Section ===== -->
   <div class="container">
-    <!-- Play Button -->
-    <a href="#" onclick="playAudio(event)" class="play-btn">
-      <img src="https://i.postimg.cc/0QLQXXML/breathing.jpg" alt="Play Breathing Music">
-    </a>
+    <img src="https://i.postimg.cc/MKgKnvYZ/guy-breathing.jpg" alt="Guy Breathing" id="playImage1">
 
-    <!-- Hidden Audio -->
-    <audio id="myAudio">
-      <source src="https://living-jade-ktakggbrow.edgeone.app/relaxing-breathing-sound.mp3" type="audio/mpeg">
+    <audio id="myAudio1" 
+           src="https://living-jade-ktakggbrow.edgeone.app/calm-yoga-lofi-peaceful-meditation-beat-247403%20(online-audio-converter.com).mp3">
     </audio>
 
-    <!-- Breathing Guide -->
     <div class="practice">
-      <h2>Basic Deep Breathing</h2>
-      <p>1. <b>Sit Comfortably</b> with your back straight and shoulders relaxed.</p>
-      <p>2. <b>Inhale</b> slowly through your nose for <b>4 seconds</b>, filling your belly with air.</p>
-      <p>3. <b>Hold</b> your breath gently for <b>2 seconds</b>.</p>
-      <p>4. <b>Exhale</b> slowly through your mouth for <b>6 seconds</b>, releasing all tension.</p>
-      <p>5. Repeat this cycle for <b>5–10 minutes</b>.</p>
+      <h2>How to Practice</h2>
+      1. <b>Inhale</b> slowly through your nose for 4 seconds, feeling your lungs fill with air.<br><br>
+      2. <b>Hold</b> your breath for 4 seconds.<br><br>
+      3. <b>Exhale</b> slowly through your mouth for 4 seconds, completely emptying your lungs.<br><br>
+      4. <b>Rest</b> for 4 seconds before beginning the next cycle.<br><br>
 
       <div class="practice1">
-        <p><b>Benefits:</b> Deep breathing calms your nervous system, lowers blood pressure, and promotes relaxation.</p>
+        <b>Benefits:</b> Box breathing helps reduce stress, improve focus, and calm your nervous system.
+        Practice regularly for best results.
       </div>
     </div>
+  </div>
 
-    <!-- More Breathing Techniques -->
-    <div class="tips">
-      <h2>Other Breathing Techniques</h2>
+  <!-- ===== Second Section ===== -->
+  <div class="container">
+    <img src="https://i.postimg.cc/JzhCxm4D/inhale.jpg" alt="Inhale Practice" id="playImage2">
 
-      <div class="tip-card">
-        <h3>🌬️ Box Breathing</h3>
-        <p>Inhale for 4 seconds → Hold 4 seconds → Exhale 4 seconds → Hold 4 seconds.</p>
-        <p><b>Benefit:</b> Improves focus, reduces anxiety, and resets your stress response.</p>
-      </div>
+    <audio id="myAudio2" 
+           src="https://living-jade-ktakggbrow.edgeone.app/calm-yoga-lofi-peaceful-meditation-beat-247403%20(online-audio-converter.com).mp3">
+    </audio>
 
-      <div class="tip-card">
-        <h3>🌿 Alternate Nostril Breathing</h3>
-        <p>Close your right nostril and inhale through the left → switch nostrils and exhale → repeat on the other side.</p>
-        <p><b>Benefit:</b> Balances energy, increases mental clarity, and supports relaxation.</p>
-      </div>
+    <div class="practice">
+      <h2>How to Practice</h2>
+      1. <b>Inhale</b> slowly through your nose for 4 seconds, feeling your lungs fill with air.<br><br>
+      2. <b>Hold</b> your breath for 4 seconds.<br><br>
+      3. <b>Exhale</b> slowly through your mouth for 4 seconds, completely emptying your lungs.<br><br>
+      4. <b>Rest</b> for 4 seconds before beginning the next cycle.<br><br>
 
-      <div class="tip-card">
-        <h3>🔥 Breath of Fire</h3>
-        <p>Take short, powerful exhales through the nose while keeping inhales passive. Maintain a steady rhythm.</p>
-        <p><b>Benefit:</b> Energizes the body, improves lung capacity, and detoxifies.</p>
-      </div>
-
-      <div class="tip-card">
-        <h3>😴 4-7-8 Breathing</h3>
-        <p>Inhale for 4 seconds → Hold for 7 seconds → Exhale for 8 seconds. Repeat 4 cycles.</p>
-        <p><b>Benefit:</b> Promotes deep relaxation and helps improve sleep quality.</p>
+      <div class="practice1">
+        <b>Benefits:</b> Box breathing helps reduce stress, improve focus, and calm your nervous system.
+        Practice regularly for best results.
       </div>
     </div>
   </div>
 
   <script>
-    function playAudio(event) {
-      event.preventDefault(); 
-      const audio = document.getElementById("myAudio");
+    // First section
+    const playImage1 = document.getElementById('playImage1');
+    const audio1 = document.getElementById('myAudio1');
 
-      if (audio.paused) {
-        audio.play();
+    playImage1.addEventListener('click', () => {
+      if (audio1.paused) {
+        audio1.play();
       } else {
-        audio.pause();
+        audio1.pause();
       }
-    }
+    });
+
+    // Second section
+    const playImage2 = document.getElementById('playImage2');
+    const audio2 = document.getElementById('myAudio2');
+
+    playImage2.addEventListener('click', () => {
+      if (audio2.paused) {
+        audio2.play();
+      } else {
+        audio2.pause();
+      }
+    });
   </script>
 
 </body>
