@@ -15,6 +15,7 @@ function clearTokenFromURL() {
     }
 }
 
+// Initialize charts
 document.addEventListener("DOMContentLoaded", () => {
     // Activity Chart (Bubble Style)
     new Chart(document.getElementById("activityChart"), {
@@ -87,28 +88,37 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-// Enhanced authentication check
+// Enhanced authentication check - FIXED VERSION
 document.addEventListener("DOMContentLoaded", async () => {
+    console.log('🔍 Starting authentication check...');
+    
     // First check if there's a token in the URL (Google OAuth redirect)
     let token = getTokenFromURL();
+    console.log('🔗 Token from URL:', token ? 'Found' : 'Not found');
     
     if (token) {
+        console.log('Saving token to localStorage...');
         // Save token to localStorage for future use
         localStorage.setItem('token', token);
         // Clean up URL
         clearTokenFromURL();
+        console.log('🧹 URL cleaned, token saved');
     } else {
         // Check localStorage for existing token
         token = localStorage.getItem('token');
+        console.log('Token from localStorage:', token ? 'Found' : 'Not found');
     }
 
     // If no token found anywhere, redirect to signin
     if (!token) {
         console.log('No token found, redirecting to signin');
+        alert('No authentication token found. Please sign in again.');
         window.location.href = 'signin.html';
         return;
     }
 
+    console.log('Token found, verifying with server...');
+    
     try {
         const res = await fetch(`${API_URL}/me`, {
             method: 'GET',
@@ -118,38 +128,72 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         });
 
+        console.log('📡 Server response status:', res.status);
+        
         if (!res.ok) {
+            console.log('❌ Server response not OK:', res.statusText);
+            // Log the response for debugging
+            const errorText = await res.text();
+            console.log('📄 Error response:', errorText);
+            
             // If token is invalid, clear it and redirect
             localStorage.removeItem('token');
-            throw new Error('Failed to fetch user data');
+            throw new Error(`Server responded with ${res.status}: ${res.statusText}`);
         }
 
         const data = await res.json();
-        const nickname = data.nickname || 'User';
-        document.getElementById('userNickname').textContent = nickname;
+        console.log('✅ User data received:', data);
+        
+        const nickname = data.nickname || data.fullname || 'User';
+        const nicknameElement = document.getElementById('userNickname');
+        
+        if (nicknameElement) {
+            nicknameElement.textContent = nickname;
+            console.log('Nickname set to:', nickname);
+        } else {
+            console.log('userNickname element not found');
+        }
 
-        console.log('User authenticated successfully:', data);
+        console.log('User authenticated successfully');
         
     } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error('Error during authentication:', error);
+        
         // Clear invalid token
         localStorage.removeItem('token');
-        alert('Session expired. Please sign in again.');
+        
+        // Show specific error message
+        let errorMessage = 'Authentication failed. Please sign in again.';
+        if (error.message.includes('Failed to fetch')) {
+            errorMessage = 'Cannot connect to server. Please check your internet connection and try again.';
+        } else if (error.message.includes('401')) {
+            errorMessage = 'Your session has expired. Please sign in again.';
+        }
+        
+        alert(errorMessage);
         window.location.href = 'signin.html';
     }
 });
 
 // Handle logout
-document.getElementById("logoutBtn").addEventListener("click", () => {
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+    console.log('Logout initiated...');
+    
     // Clear token from localStorage
     localStorage.removeItem("token");
 
-    // Call the backend route for logout (if needed)
-    fetch(`${API_URL}/logout`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" }
-    }).catch(err => console.error("Logout error:", err));
+    // Call the backend route for logout (optional)
+    try {
+        await fetch(`${API_URL}/logout`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" }
+        });
+        console.log('Backend logout successful');
+    } catch (err) {
+        console.error("Backend logout error (non-critical):", err);
+    }
 
     // Redirect to signin page
+    console.log('Redirecting to signin...');
     window.location.href = "signin.html";
 });
