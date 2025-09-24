@@ -117,11 +117,17 @@ html, body {
         background-color: var(--green6);
         color:white;
     }
-    .option input[type="radio"] {
-      margin-right: 12px;
-      accent-color: var(--green5); 
-       margin-top: 5px;
-    }
+ .option input[type="checkbox"] {
+  display: none;
+}
+
+.option input[type="checkbox"]:checked + .label-text {
+  background-color: var(--green6);   
+  color: white;                
+  border-radius: 30px;
+  padding: 12px 18px;
+  transition: all 0.2s ease;
+}
 
     .option h5,
 .option p {
