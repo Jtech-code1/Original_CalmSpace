@@ -1,21 +1,35 @@
 // Dynamic API URL based on environment
 const API_URL = (() => {
     const hostname = window.location.hostname;
-    const isLocal = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0';
+    console.log('Current hostname:', hostname);
+    
+    // More robust environment detection
+    const isLocal = hostname === 'localhost' || 
+                hostname === '127.0.0.1' || 
+                hostname === '0.0.0.0' ||
+                hostname.includes('localhost') ||
+                window.location.port === '5500'; // Live Server port
     
     const apiUrl = isLocal 
         ? "http://localhost:5000/api/auth"  // Local backend
         : "https://calmspace-api.onrender.com/api/auth";  // Production backend
     
-    console.log('Detected hostname:', hostname);
-    console.log('Using API URL:', apiUrl);
+    console.log('Environment Detection:');
+    console.log('  - Hostname:', hostname);
+    console.log('  - Port:', window.location.port);
+    console.log('  - Protocol:', window.location.protocol);
+    console.log('  - Is Local:', isLocal);
+    console.log('  - Using API URL:', apiUrl);
+    
     return apiUrl;
 })();
 
 // Function to get token from URL parameters
 function getTokenFromURL() {
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('token');
+    const token = urlParams.get('token');
+    console.log('Token from URL:', token ? `Found (${token.substring(0, 20)}...)` : 'Not found');
+    return token;
 }
 
 // Function to clear token from URL without refreshing page
@@ -24,8 +38,198 @@ function clearTokenFromURL() {
         const url = new URL(window.location);
         url.searchParams.delete('token');
         window.history.replaceState({}, document.title, url.pathname);
+        console.log('Token cleared from URL');
     }
 }
+
+// Improved authentication check
+document.addEventListener("DOMContentLoaded", async () => {
+    console.log('=== AUTHENTICATION CHECK STARTED ===');
+    console.log('Current URL:', window.location.href);
+    console.log('API URL:', API_URL);
+    
+    // Step 1: Check for token in URL (from OAuth redirect)
+    let token = getTokenFromURL();
+    
+    if (token) {
+        console.log('📥 Token found in URL, saving to localStorage...');
+        localStorage.setItem('token', token);
+        clearTokenFromURL();
+    } else {
+        // Step 2: Check localStorage for existing token
+        token = localStorage.getItem('token');
+        console.log('📱 Token from localStorage:', token ? `Found (${token.substring(0, 20)}...)` : 'Not found');
+    }
+
+    // Step 3: If no token found anywhere, redirect to signin
+    if (!token) {
+        console.log('❌ No token found anywhere, redirecting to signin');
+        window.location.href = 'signin.html';
+        return;
+    }
+
+    console.log('✅ Token found, verifying with server...');
+    
+    try {
+        console.log('🔄 Making request to:', `${API_URL}/me`);
+        
+        const response = await fetch(`${API_URL}/me`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            // Add timeout for production
+            signal: AbortSignal.timeout(10000) // 10 second timeout
+        });
+
+        console.log('📡 Server response:', {
+            status: response.status,
+            statusText: response.statusText,
+            ok: response.ok,
+            headers: Object.fromEntries(response.headers.entries())
+        });
+        
+        if (!response.ok) {
+            console.log('❌ Server response not OK');
+            
+            // Handle different error status codes
+            if (response.status === 401) {
+                console.log('🔒 Unauthorized - token invalid or expired');
+                localStorage.removeItem('token');
+                alert('Your session has expired. Please sign in again.');
+                window.location.href = 'signin.html';
+                return;
+            } 
+            
+            if (response.status === 404) {
+                console.log('👤 User not found');
+                localStorage.removeItem('token');
+                alert('User account not found. Please sign in again.');
+                window.location.href = 'signin.html';
+                return;
+            }
+            
+            if (response.status >= 500) {
+                console.log('🚨 Server error:', response.status);
+                alert('Server error. Please try again later or contact support.');
+                return;
+            }
+            
+            // For other errors, try to get error message
+            let errorMessage = `Server error: ${response.status}`;
+            try {
+                const errorData = await response.json();
+                errorMessage = errorData.message || errorData.error || errorMessage;
+            } catch (e) {
+                console.log('Could not parse error response');
+            }
+            
+            console.log('💥 Authentication failed:', errorMessage);
+            localStorage.removeItem('token');
+            alert('Authentication failed. Please sign in again.');
+            window.location.href = 'signin.html';
+            return;
+        }
+
+        // Parse successful response
+        const userData = await response.json();
+        console.log('👤 User data received:', {
+            id: userData.id,
+            email: userData.email,
+            nickname: userData.nickname,
+            fullname: userData.fullname,
+            isVerified: userData.isVerified
+        });
+        
+        // Check if user profile is complete
+        if (!userData.nickname && !userData.fullname) {
+            console.log('📝 User profile incomplete, redirecting to onboarding');
+            alert('Please complete your profile setup.');
+            window.location.href = 'onboarding1.html';
+            return;
+        }
+        
+        // Update UI with user info
+        const nickname = userData.nickname || userData.fullname || 'User';
+        const nicknameElement = document.getElementById('userNickname');
+        
+        if (nicknameElement) {
+            nicknameElement.textContent = nickname;
+            console.log('✅ UI updated - nickname set to:', nickname);
+        } else {
+            console.log('⚠️ userNickname element not found in DOM');
+        }
+
+        console.log('🎉 Authentication successful!');
+        
+    } catch (error) {
+        console.error('💥 Authentication error:', error);
+        
+        // Handle different types of errors
+        if (error.name === 'AbortError') {
+            console.log('⏱️ Request timeout');
+            alert('Connection timeout. Please check your internet connection and try again.');
+            return;
+        }
+        
+        if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
+            console.log('🌐 Network error detected');
+            alert('Cannot connect to server. Please check your internet connection.');
+            return;
+        }
+        
+        // For other errors, clear token and redirect
+        console.log('🔄 Clearing token and redirecting to signin');
+        localStorage.removeItem('token');
+        alert('Authentication failed. Please sign in again.');
+        window.location.href = 'signin.html';
+    }
+});
+
+// Enhanced logout handler
+document.addEventListener("DOMContentLoaded", () => {
+    const logoutBtn = document.getElementById("logoutBtn");
+    
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", async (e) => {
+            e.preventDefault();
+            console.log('🔓 Logout initiated...');
+            
+            const token = localStorage.getItem('token');
+            
+            // Clear token from localStorage immediately
+            localStorage.removeItem("token");
+            
+            // Try to call backend logout (non-blocking)
+            try {
+                const response = await fetch(`${API_URL}/logout`, {
+                    method: "POST",
+                    headers: { 
+                        "Content-Type": "application/json",
+                        ...(token && { "Authorization": `Bearer ${token}` })
+                    },
+                    signal: AbortSignal.timeout(5000) // 5 second timeout for logout
+                });
+                
+                if (response.ok) {
+                    console.log('✅ Backend logout successful');
+                } else {
+                    console.log('⚠️ Backend logout failed, but continuing...');
+                }
+            } catch (err) {
+                console.log("⚠️ Backend logout error (non-critical):", err.message);
+            }
+            
+            // Always redirect regardless of backend logout status
+            console.log('🔄 Redirecting to signin...');
+            window.location.href = "signin.html";
+        });
+    } else {
+        console.log('⚠️ Logout button not found in DOM');
+    }
+});
 
 // Initialize charts
 document.addEventListener("DOMContentLoaded", () => {
@@ -105,184 +309,5 @@ document.addEventListener("DOMContentLoaded", () => {
                 plugins: { legend: { display: false } }
             }
         });
-    }
-});
-
-// Enhanced authentication check - LOCAL DEVELOPMENT VERSION
-document.addEventListener("DOMContentLoaded", async () => {
-    console.log('Starting authentication check...');
-    console.log('Current URL:', window.location.href);
-    console.log('API URL:', API_URL);
-    
-    // First check if there's a token in the URL (Google OAuth redirect)
-    let token = getTokenFromURL();
-    console.log('Token from URL:', token ? `Found (${token.substring(0, 20)}...)` : 'Not found');
-    
-    if (token) {
-        console.log('Saving token to localStorage...');
-        // Save token to localStorage for future use
-        localStorage.setItem('token', token);
-        // Clean up URL
-        clearTokenFromURL();
-        console.log('URL cleaned, token saved');
-    } else {
-        // Check localStorage for existing token
-        token = localStorage.getItem('token');
-        console.log('Token from localStorage:', token ? `Found (${token.substring(0, 20)}...)` : 'Not found');
-    }
-
-    // If no token found anywhere, redirect to signin
-    if (!token) {
-        console.log('No token found, redirecting to signin');
-        alert('No authentication token found. Please sign in again.');
-        window.location.href = 'signin.html';
-        return;
-    }
-
-    console.log('Token found, verifying with server...');
-    
-    try {
-        console.log('Making request to:', `${API_URL}/me`);
-        
-        const res = await fetch(`${API_URL}/me`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        });
-
-        console.log('Server response status:', res.status);
-        console.log('Server response ok:', res.ok);
-        
-        if (!res.ok) {
-            console.log('Server response not OK:', res.status, res.statusText);
-            
-            // Get response text for debugging
-            let errorText;
-            try {
-                const contentType = res.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    const errorData = await res.json();
-                    errorText = JSON.stringify(errorData, null, 2);
-                } else {
-                    errorText = await res.text();
-                }
-                console.log('Error response body:', errorText);
-            } catch (e) {
-                console.log('Could not read error response body:', e);
-            }
-            
-            // Handle different error types
-            if (res.status === 401) {
-                console.log('Unauthorized - token invalid or expired');
-                localStorage.removeItem('token');
-                alert('Your session has expired. Please sign in again.');
-                window.location.href = 'signin.html';
-                return;
-            } else if (res.status === 404) {
-                console.log('User not found');
-                localStorage.removeItem('token');
-                alert('User account not found. Please sign in again.');
-                window.location.href = 'signin.html';
-                return;
-            } else if (res.status >= 500) {
-                console.log('Server error');
-                alert('Server error. Please try again later.');
-                return;
-            } else {
-                console.log('Other error');
-                localStorage.removeItem('token');
-                throw new Error(`Server responded with ${res.status}: ${res.statusText}`);
-            }
-        }
-
-        const data = await res.json();
-        console.log('User data received:', {
-            id: data.id,
-            email: data.email,
-            nickname: data.nickname,
-            isVerified: data.isVerified
-        });
-        
-        // Check if user profile is complete
-        if (!data.nickname) {
-            console.log('User profile incomplete, redirecting to onboarding');
-            alert('Please complete your profile setup.');
-            window.location.href = 'onboarding1.html';
-            return;
-        }
-        
-        const nickname = data.nickname || data.fullname || 'User';
-        const nicknameElement = document.getElementById('userNickname');
-        
-        if (nicknameElement) {
-            nicknameElement.textContent = nickname;
-            console.log('Nickname set to:', nickname);
-        } else {
-            console.log('userNickname element not found in DOM');
-        }
-
-        console.log('User authenticated successfully');
-        
-    } catch (error) {
-        console.error('Error during authentication:', error);
-        
-        // Handle network errors differently from auth errors
-        if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
-            console.log('Network error detected');
-            console.log('Check if backend server is running on:', API_URL.replace('/api/auth', ''));
-            alert('Cannot connect to server. Please ensure the backend server is running.');
-            return;
-        }
-        
-        // For other errors, clear token and redirect
-        localStorage.removeItem('token');
-        
-        let errorMessage = 'Authentication failed. Please sign in again.';
-        if (error.message.includes('401')) {
-            errorMessage = 'Your session has expired. Please sign in again.';
-        }
-        
-        alert(errorMessage);
-        window.location.href = 'signin.html';
-    }
-});
-
-// Handle logout
-document.addEventListener("DOMContentLoaded", () => {
-    const logoutBtn = document.getElementById("logoutBtn");
-    
-    if (logoutBtn) {
-        logoutBtn.addEventListener("click", async (e) => {
-            e.preventDefault();
-            console.log('Logout initiated...');
-            
-            const token = localStorage.getItem('token');
-            
-            // Clear token from localStorage
-            localStorage.removeItem("token");
-            
-            // Call the backend route for logout (optional)
-            try {
-                await fetch(`${API_URL}/logout`, {
-                    method: "POST",
-                    headers: { 
-                        "Content-Type": "application/json",
-                        ...(token && { "Authorization": `Bearer ${token}` })
-                    }
-                });
-                console.log('Backend logout successful');
-            } catch (err) {
-                console.error("Backend logout error (non-critical):", err);
-            }
-            
-            // Redirect to signin page
-            console.log('Redirecting to signin...');
-            window.location.href = "signin.html";
-        });
-    } else {
-        console.log('Logout button not found in DOM');
     }
 });
