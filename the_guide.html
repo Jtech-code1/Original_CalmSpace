@@ -61,47 +61,7 @@
     <a href="the_8.html"><img src="https://i.postimg.cc/MKHdSBxk/State-Card-8.png" alt=""></a>
   </section>
 
-  <!-- ✅ JavaScript
-  <script>
-    const menuIcon = document.getElementById("menu-icon");
-    const navLinks = document.querySelector(".nav-links");
-
-    menuIcon.addEventListener("click", () => {
-      navLinks.classList.toggle("active");
-    });
-
-  async function fetchUserData() {
-    const token = localStorage.getItem("authToken");
-
-    if (!token) {
-      console.log("No token found, user not logged in.");
-      return;
-    }
-
-    try {
-      const res = await fetch("https://calmspace-api.onrender.com/api/user/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to fetch user data");
-      }
-
-      const data = await res.json();
-      console.log("User data:", data);
-
-      // Example: show user's name on page
-      document.getElementById("userName").textContent = data.fullname;
-    } catch (err) {
-      console.error(err.message);
-    }
-  }
-
-  // Call it automatically on page load
-  fetchUserData();
-  </script> -->
+ 
 
 </body>
 </html>
