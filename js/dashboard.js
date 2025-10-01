@@ -1,313 +1,447 @@
-// Dynamic API URL based on environment
+// Enhanced API URL detection with better production support
 const API_URL = (() => {
     const hostname = window.location.hostname;
-    console.log('Current hostname:', hostname);
+    const protocol = window.location.protocol;
     
-    // More robust environment detection
+    // More robust local development detection
     const isLocal = hostname === 'localhost' || 
-                hostname === '127.0.0.1' || 
-                hostname === '0.0.0.0' ||
-                hostname.includes('localhost') ||
-                window.location.port === '5500'; // Live Server port
+                   hostname === '127.0.0.1' || 
+                   hostname === '0.0.0.0' ||
+                   hostname.startsWith('192.168.') ||
+                   hostname.endsWith('.local') ||
+                   protocol === 'file:';
     
     const apiUrl = isLocal 
-        ? "http://localhost:5000/api/auth"  // Local backend
-        : "https://calmspace-api.onrender.com/api/auth";  // Production backend
+        ? "http://localhost:5000/api/auth"  
+        : "https://calmspace-api.onrender.com/api/auth";
     
-    console.log('Environment Detection:');
+    console.log('🌍 Environment Detection:');
     console.log('  - Hostname:', hostname);
-    console.log('  - Port:', window.location.port);
-    console.log('  - Protocol:', window.location.protocol);
+    console.log('  - Protocol:', protocol);
     console.log('  - Is Local:', isLocal);
-    console.log('  - Using API URL:', apiUrl);
+    console.log('  - API URL:', apiUrl);
     
     return apiUrl;
 })();
 
-// Function to get token from URL parameters
-function getTokenFromURL() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
-    console.log('Token from URL:', token ? `Found (${token.substring(0, 20)}...)` : 'Not found');
-    return token;
-}
-
-// Function to clear token from URL without refreshing page
-function clearTokenFromURL() {
-    if (window.location.search.includes('token=')) {
-        const url = new URL(window.location);
-        url.searchParams.delete('token');
-        window.history.replaceState({}, document.title, url.pathname);
-        console.log('Token cleared from URL');
-    }
-}
-
-// Improved authentication check
-document.addEventListener("DOMContentLoaded", async () => {
-    console.log('=== AUTHENTICATION CHECK STARTED ===');
-    console.log('Current URL:', window.location.href);
-    console.log('API URL:', API_URL);
+// Enhanced token management
+const TokenManager = {
+    get: () => {
+        // First check URL parameters (for OAuth redirects)
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlToken = urlParams.get('token');
+        
+        if (urlToken) {
+            console.log('📥 Token found in URL, saving to localStorage');
+            localStorage.setItem('token', urlToken);
+            // Clean URL immediately
+            TokenManager.clearTokenFromURL();
+            return urlToken;
+        }
+        
+        // Then check localStorage
+        const storageToken = localStorage.getItem('token');
+        console.log('💾 Token from localStorage:', storageToken ? 'Found' : 'Not found');
+        return storageToken;
+    },
     
-    // Step 1: Check for token in URL (from OAuth redirect)
-    let token = getTokenFromURL();
+    set: (token) => {
+        if (token) {
+            localStorage.setItem('token', token);
+            console.log('✅ Token saved to localStorage');
+        }
+    },
     
-    if (token) {
-        console.log('📥 Token found in URL, saving to localStorage...');
-        localStorage.setItem('token', token);
-        clearTokenFromURL();
-    } else {
-        // Step 2: Check localStorage for existing token
-        token = localStorage.getItem('token');
-        console.log('📱 Token from localStorage:', token ? `Found (${token.substring(0, 20)}...)` : 'Not found');
+    remove: () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user'); // Clean up user data too
+        console.log('🗑️ Token removed from localStorage');
+    },
+    
+    clearTokenFromURL: () => {
+        if (window.location.search.includes('token=')) {
+            const url = new URL(window.location);
+            url.searchParams.delete('token');
+            window.history.replaceState({}, document.title, url.pathname);
+            console.log('🧹 Token cleared from URL');
+        }
     }
+};
 
-    // Step 3: If no token found anywhere, redirect to signin
+// Enhanced API request with better error handling
+const makeAuthenticatedRequest = async (endpoint, options = {}) => {
+    const token = TokenManager.get();
+    
     if (!token) {
-        console.log('❌ No token found anywhere, redirecting to signin');
-        window.location.href = 'signin.html';
-        return;
+        throw new Error('NO_TOKEN');
     }
-
-    console.log('✅ Token found, verifying with server...');
+    
+    const defaultOptions = {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        credentials: 'include' // Important for production CORS
+    };
+    
+    const finalOptions = {
+        ...defaultOptions,
+        ...options,
+        headers: {
+            ...defaultOptions.headers,
+            ...options.headers
+        }
+    };
+    
+    console.log(`🌐 Making request to: ${API_URL}${endpoint}`);
     
     try {
-        console.log('🔄 Making request to:', `${API_URL}/me`);
+        const response = await fetch(`${API_URL}${endpoint}`, finalOptions);
         
-        const response = await fetch(`${API_URL}/me`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            // Add timeout for production
-            signal: AbortSignal.timeout(10000) // 10 second timeout
-        });
-
-        console.log('📡 Server response:', {
-            status: response.status,
-            statusText: response.statusText,
-            ok: response.ok,
-            headers: Object.fromEntries(response.headers.entries())
-        });
+        console.log('📡 Response status:', response.status);
+        console.log('📡 Response ok:', response.ok);
         
+        // Handle different response types
         if (!response.ok) {
-            console.log('❌ Server response not OK');
+            let errorData;
+            const contentType = response.headers.get('content-type');
             
-            // Handle different error status codes
-            if (response.status === 401) {
-                console.log('🔒 Unauthorized - token invalid or expired');
-                localStorage.removeItem('token');
-                alert('Your session has expired. Please sign in again.');
-                window.location.href = 'signin.html';
-                return;
-            } 
-            
-            if (response.status === 404) {
-                console.log('👤 User not found');
-                localStorage.removeItem('token');
-                alert('User account not found. Please sign in again.');
-                window.location.href = 'signin.html';
-                return;
-            }
-            
-            if (response.status >= 500) {
-                console.log('🚨 Server error:', response.status);
-                alert('Server error. Please try again later or contact support.');
-                return;
-            }
-            
-            // For other errors, try to get error message
-            let errorMessage = `Server error: ${response.status}`;
             try {
-                const errorData = await response.json();
-                errorMessage = errorData.message || errorData.error || errorMessage;
+                if (contentType && contentType.includes('application/json')) {
+                    errorData = await response.json();
+                } else {
+                    errorData = { message: await response.text() };
+                }
             } catch (e) {
-                console.log('Could not parse error response');
+                errorData = { message: `HTTP ${response.status} - ${response.statusText}` };
             }
             
-            console.log('💥 Authentication failed:', errorMessage);
-            localStorage.removeItem('token');
-            alert('Authentication failed. Please sign in again.');
-            window.location.href = 'signin.html';
-            return;
+            // Specific error handling
+            if (response.status === 401) {
+                console.log('🚫 Unauthorized - token invalid');
+                TokenManager.remove();
+                throw new Error('UNAUTHORIZED');
+            } else if (response.status === 403) {
+                console.log('🚫 Forbidden - access denied');
+                throw new Error('FORBIDDEN');
+            } else if (response.status === 404) {
+                console.log('❌ Not found - user/endpoint not found');
+                throw new Error('NOT_FOUND');
+            } else if (response.status >= 500) {
+                console.log('🔥 Server error');
+                throw new Error('SERVER_ERROR');
+            }
+            
+            throw new Error(errorData.message || errorData.msg || `Request failed: ${response.status}`);
         }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('💥 Request failed:', error);
+        
+        // Network errors
+        if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+            console.log('🌐 Network error - possibly CORS or server down');
+            throw new Error('NETWORK_ERROR');
+        }
+        
+        throw error;
+    }
+};
 
-        // Parse successful response
-        const userData = await response.json();
-        console.log('👤 User data received:', {
+// Enhanced authentication check
+const authenticateUser = async () => {
+    console.log('🔐 Starting enhanced authentication check...');
+    
+    try {
+        const token = TokenManager.get();
+        
+        if (!token) {
+            console.log('❌ No token found anywhere');
+            throw new Error('NO_TOKEN');
+        }
+        
+        console.log('✅ Token found, verifying with server...');
+        
+        const userData = await makeAuthenticatedRequest('/me');
+        
+        console.log('✅ Authentication successful:', {
             id: userData.id,
             email: userData.email,
-            nickname: userData.nickname,
-            fullname: userData.fullname,
-            isVerified: userData.isVerified
+            nickname: userData.nickname
         });
         
-        // Check if user profile is complete
-        if (!userData.nickname && !userData.fullname) {
-            console.log('📝 User profile incomplete, redirecting to onboarding');
-            alert('Please complete your profile setup.');
-            window.location.href = 'onboarding1.html';
-            return;
-        }
-        
-        // Update UI with user info
-        const nickname = userData.nickname || userData.fullname || 'User';
+        // Update UI with user data
         const nicknameElement = document.getElementById('userNickname');
-        
-        if (nicknameElement) {
-            nicknameElement.textContent = nickname;
-            console.log('✅ UI updated - nickname set to:', nickname);
-        } else {
-            console.log('⚠️ userNickname element not found in DOM');
+        if (nicknameElement && userData.nickname) {
+            nicknameElement.textContent = userData.nickname;
         }
-
-        console.log('🎉 Authentication successful!');
+        
+        // Store user data for offline access
+        localStorage.setItem('user', JSON.stringify(userData));
+        
+        return userData;
         
     } catch (error) {
-        console.error('💥 Authentication error:', error);
+        console.error('💥 Authentication failed:', error.message);
         
-        // Handle different types of errors
-        if (error.name === 'AbortError') {
-            console.log('⏱️ Request timeout');
-            alert('Connection timeout. Please check your internet connection and try again.');
-            return;
+        // Handle different error types
+        switch (error.message) {
+            case 'NO_TOKEN':
+                alert('No authentication token found. Please sign in.');
+                window.location.href = 'signin.html';
+                break;
+                
+            case 'UNAUTHORIZED':
+                alert('Your session has expired. Please sign in again.');
+                window.location.href = 'signin.html';
+                break;
+                
+            case 'NOT_FOUND':
+                alert('User account not found. Please sign in again.');
+                TokenManager.remove();
+                window.location.href = 'signin.html';
+                break;
+                
+            case 'NETWORK_ERROR':
+                console.log('🌐 Network issue detected');
+                // Try to use cached user data if available
+                const cachedUser = localStorage.getItem('user');
+                if (cachedUser) {
+                    console.log('📦 Using cached user data');
+                    const userData = JSON.parse(cachedUser);
+                    const nicknameElement = document.getElementById('userNickname');
+                    if (nicknameElement && userData.nickname) {
+                        nicknameElement.textContent = userData.nickname;
+                    }
+                    // Show warning about network issues
+                    showNetworkWarning();
+                    return userData;
+                }
+                alert('Cannot connect to server. Please check your internet connection and try again.');
+                break;
+                
+            case 'SERVER_ERROR':
+                alert('Server is currently unavailable. Please try again later.');
+                break;
+                
+            default:
+                alert(`Authentication error: ${error.message}`);
+                TokenManager.remove();
+                window.location.href = 'signin.html';
         }
         
-        if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
-            console.log('🌐 Network error detected');
-            alert('Cannot connect to server. Please check your internet connection.');
-            return;
-        }
-        
-        // For other errors, clear token and redirect
-        console.log('🔄 Clearing token and redirecting to signin');
-        localStorage.removeItem('token');
-        alert('Authentication failed. Please sign in again.');
-        window.location.href = 'signin.html';
+        throw error;
     }
-});
+};
+
+// Show network warning
+const showNetworkWarning = () => {
+    const warning = document.createElement('div');
+    warning.style.cssText = `
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: #ff6b6b;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px;
+        z-index: 1000;
+        font-size: 14px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    `;
+    warning.textContent = 'Network issues detected. Some features may not work properly.';
+    document.body.appendChild(warning);
+    
+    setTimeout(() => {
+        if (document.body.contains(warning)) {
+            document.body.removeChild(warning);
+        }
+    }, 5000);
+};
+
+// Initialize charts with error handling
+const initializeCharts = () => {
+    try {
+        const activityChart = document.getElementById("activityChart");
+        const moodChart = document.getElementById("moodChart");
+
+        if (activityChart) {
+            new Chart(activityChart, {
+                type: "bubble",
+                data: {
+                    datasets: [{
+                        label: "Weekly Activities",
+                        data: [
+                            {x: 1, y: 20, r: 10},
+                            {x: 2, y: 30, r: 12},
+                            {x: 3, y: 25, r: 14},
+                            {x: 4, y: 60, r: 18},
+                            {x: 5, y: 45, r: 15},
+                            {x: 6, y: 40, r: 16}
+                        ],
+                        backgroundColor: "#8bcba7"
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            ticks: {
+                                callback: value => ["","Yoga","Journaling","Breathing","Music","Sound Therapy","Mood Tracking"][value]
+                            },
+                            grid: { drawOnChartArea: false }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            max: 70,
+                            title: { display: true, text: "Minutes" }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        if (moodChart) {
+            new Chart(moodChart, {
+                type: "line",
+                data: {
+                    labels: ["Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec","Jan"],
+                    datasets: [{
+                        label: "Mood Level",
+                        data: [3,4,3,5,4,6,5,6,5,7,6,8],
+                        borderColor: "#8bcba7",
+                        backgroundColor: "rgba(139,203,167,0.2)",
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 6,
+                        pointBackgroundColor: "#8bcba7"
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            min: 1,
+                            max: 5,
+                            ticks: {
+                                stepSize: 1,
+                                callback: value => ["😡","😕","🙂","😀","😄"][value-1]
+                            }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+        
+        console.log('📊 Charts initialized successfully');
+    } catch (error) {
+        console.error('📊 Chart initialization error:', error);
+    }
+};
 
 // Enhanced logout handler
-document.addEventListener("DOMContentLoaded", () => {
-    const logoutBtn = document.getElementById("logoutBtn");
+const handleLogout = async () => {
+    console.log('👋 Logout initiated...');
     
-    if (logoutBtn) {
-        logoutBtn.addEventListener("click", async (e) => {
-            e.preventDefault();
-            console.log('🔓 Logout initiated...');
-            
-            const token = localStorage.getItem('token');
-            
-            // Clear token from localStorage immediately
-            localStorage.removeItem("token");
-            
-            // Try to call backend logout (non-blocking)
-            try {
-                const response = await fetch(`${API_URL}/logout`, {
-                    method: "POST",
-                    headers: { 
-                        "Content-Type": "application/json",
-                        ...(token && { "Authorization": `Bearer ${token}` })
-                    },
-                    signal: AbortSignal.timeout(5000) // 5 second timeout for logout
-                });
-                
-                if (response.ok) {
-                    console.log('✅ Backend logout successful');
-                } else {
-                    console.log('⚠️ Backend logout failed, but continuing...');
-                }
-            } catch (err) {
-                console.log("⚠️ Backend logout error (non-critical):", err.message);
-            }
-            
-            // Always redirect regardless of backend logout status
-            console.log('🔄 Redirecting to signin...');
-            window.location.href = "signin.html";
+    const token = TokenManager.get();
+    
+    // Clear local storage first
+    TokenManager.remove();
+    
+    // Try to call backend logout (optional, don't block on failure)
+    try {
+        if (token) {
+            await makeAuthenticatedRequest('/logout', { method: 'POST' });
+            console.log('✅ Backend logout successful');
+        }
+    } catch (error) {
+        console.log('⚠️ Backend logout failed (non-critical):', error.message);
+    }
+    
+    // Always redirect to signin
+    console.log('🚀 Redirecting to signin...');
+    window.location.href = 'signin.html';
+};
+
+// Enhanced menu toggle
+const initializeMenuToggle = () => {
+    const menuToggle = document.getElementById("menuToggle");
+    const menuList = document.getElementById("menuList");
+
+    if (menuToggle && menuList) {
+        menuToggle.addEventListener("click", () => {
+            menuList.classList.toggle("show");
         });
-    } else {
-        console.log('⚠️ Logout button not found in DOM');
+        console.log('📱 Menu toggle initialized');
+    }
+};
+
+// Main initialization
+document.addEventListener("DOMContentLoaded", async () => {
+    console.log('🚀 Dashboard initialization started');
+    console.log('🌍 Current URL:', window.location.href);
+    console.log('🔧 User Agent:', navigator.userAgent);
+    
+    try {
+        // Initialize UI components first
+        initializeMenuToggle();
+        
+        // Initialize charts
+        if (typeof Chart !== 'undefined') {
+            initializeCharts();
+        } else {
+            console.log('⚠️ Chart.js not loaded, charts will not be available');
+        }
+        
+        // Authenticate user (this is the critical part)
+        await authenticateUser();
+        
+        // Setup logout handler
+        const logoutBtn = document.getElementById("logoutBtn");
+        if (logoutBtn) {
+            logoutBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                handleLogout();
+            });
+            console.log('👋 Logout handler attached');
+        }
+        
+        console.log('✅ Dashboard initialization completed successfully');
+        
+    } catch (error) {
+        console.error('💥 Dashboard initialization failed:', error);
+        // Error handling is already done in authenticateUser
     }
 });
 
-// Initialize charts
-document.addEventListener("DOMContentLoaded", () => {
-    // Only initialize charts if elements exist (avoid errors)
-    const activityChart = document.getElementById("activityChart");
-    const moodChart = document.getElementById("moodChart");
-
-    if (activityChart) {
-        // Activity Chart (Bubble Style)
-        new Chart(activityChart, {
-            type: "bubble",
-            data: {
-                datasets: [{
-                    label: "Weekly Activities",
-                    data: [
-                        {x: 1, y: 20, r: 10},
-                        {x: 2, y: 30, r: 12},
-                        {x: 3, y: 25, r: 14},
-                        {x: 4, y: 60, r: 18},
-                        {x: 5, y: 45, r: 15},
-                        {x: 6, y: 40, r: 16}
-                    ],
-                    backgroundColor: "#8bcba7"
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        ticks: {
-                            callback: value => ["","Yoga","Journaling","Breathing","Music","Sound Therapy","Mood Tracking"][value]
-                        },
-                        grid: { drawOnChartArea: false }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        max: 70,
-                        title: { display: true, text: "Minutes" }
-                    }
-                },
-                plugins: { legend: { display: false } }
-            }
-        });
+// Handle page visibility changes (helps with token refresh)
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+        console.log('👁️ Page became visible, checking authentication...');
+        // Re-authenticate when page becomes visible (helps catch expired tokens)
+        setTimeout(authenticateUser, 100);
     }
+});
 
-    if (moodChart) {
-        // Mood Tracker
-        new Chart(moodChart, {
-            type: "line",
-            data: {
-                labels: ["Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec","Jan"],
-                datasets: [{
-                    label: "Mood Level",
-                    data: [3,4,3,5,4,6,5,6,5,7,6,8],
-                    borderColor: "#8bcba7",
-                    backgroundColor: "rgba(139,203,167,0.2)",
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 6,
-                    pointBackgroundColor: "#8bcba7"
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        min: 1,
-                        max: 5,
-                        ticks: {
-                            stepSize: 1,
-                            callback: value => ["😡","😕","🙂","😀","😄"][value-1]
-                        }
-                    }
-                },
-                plugins: { legend: { display: false } }
-            }
-        });
+// Global error handler for unhandled promise rejections
+window.addEventListener('unhandledrejection', (event) => {
+    console.error('🚨 Unhandled promise rejection:', event.reason);
+    
+    // If it's an auth-related error, handle gracefully
+    if (event.reason && event.reason.message) {
+        const message = event.reason.message.toLowerCase();
+        if (message.includes('unauthorized') || message.includes('token') || message.includes('auth')) {
+            console.log('🔐 Auth-related unhandled rejection, cleaning up...');
+            TokenManager.remove();
+            window.location.href = 'signin.html';
+        }
     }
+    
+    event.preventDefault(); // Prevent the error from going to console
 });
