@@ -1,9 +1,52 @@
-// Enhanced API URL detection with better production support
+// Debug logger that persists across redirects
+const DebugLogger = {
+    logs: [],
+    
+    log: function(message, data = null) {
+        const timestamp = new Date().toISOString();
+        const logEntry = { timestamp, message, data };
+        this.logs.push(logEntry);
+        console.log(`[${timestamp}] ${message}`, data || '');
+        
+        // Save to localStorage for persistence
+        try {
+            const existingLogs = JSON.parse(localStorage.getItem('debug_logs') || '[]');
+            existingLogs.push(logEntry);
+            // Keep only last 50 logs
+            if (existingLogs.length > 50) existingLogs.shift();
+            localStorage.setItem('debug_logs', JSON.stringify(existingLogs));
+        } catch(e) {
+            console.error('Failed to save debug log:', e);
+        }
+    },
+    
+    showLogs: function() {
+        try {
+            const logs = JSON.parse(localStorage.getItem('debug_logs') || '[]');
+            console.table(logs);
+            return logs;
+        } catch(e) {
+            console.error('Failed to retrieve logs:', e);
+            return [];
+        }
+    },
+    
+    clearLogs: function() {
+        localStorage.removeItem('debug_logs');
+        this.logs = [];
+        console.log('Debug logs cleared');
+    }
+};
+
+// Make it globally accessible for debugging in console
+window.DebugLogger = DebugLogger;
+
+DebugLogger.log('Dashboard script loaded');
+
 const API_URL = (() => {
     const hostname = window.location.hostname;
     const protocol = window.location.protocol;
     
-    // More robust local development detection
     const isLocal = hostname === 'localhost' || 
                    hostname === '127.0.0.1' || 
                    hostname === '0.0.0.0' ||
@@ -15,47 +58,49 @@ const API_URL = (() => {
         ? "http://localhost:5000/api/auth"  
         : "https://calmspace-api.onrender.com/api/auth";
     
-    console.log('🌍 Environment Detection:');
-    console.log('  - Hostname:', hostname);
-    console.log('  - Protocol:', protocol);
-    console.log('  - Is Local:', isLocal);
-    console.log('  - API URL:', apiUrl);
+    DebugLogger.log('Environment Detection', {
+        hostname,
+        protocol,
+        isLocal,
+        apiUrl
+    });
     
     return apiUrl;
 })();
 
-// Enhanced token management
 const TokenManager = {
     get: () => {
-        // First check URL parameters (for OAuth redirects)
+        DebugLogger.log('TokenManager.get() called');
+        
         const urlParams = new URLSearchParams(window.location.search);
         const urlToken = urlParams.get('token');
         
         if (urlToken) {
-            console.log('📥 Token found in URL, saving to localStorage');
+            DebugLogger.log('Token found in URL', { tokenLength: urlToken.length });
             localStorage.setItem('token', urlToken);
-            // Clean URL immediately
             TokenManager.clearTokenFromURL();
             return urlToken;
         }
         
-        // Then check localStorage
         const storageToken = localStorage.getItem('token');
-        console.log('💾 Token from localStorage:', storageToken ? 'Found' : 'Not found');
+        DebugLogger.log('Token from localStorage', { 
+            found: !!storageToken,
+            tokenLength: storageToken ? storageToken.length : 0
+        });
         return storageToken;
     },
     
     set: (token) => {
         if (token) {
             localStorage.setItem('token', token);
-            console.log('✅ Token saved to localStorage');
+            DebugLogger.log('Token saved to localStorage', { tokenLength: token.length });
         }
     },
     
     remove: () => {
         localStorage.removeItem('token');
-        localStorage.removeItem('user'); // Clean up user data too
-        console.log('🗑️ Token removed from localStorage');
+        localStorage.removeItem('user');
+        DebugLogger.log('Token removed from localStorage');
     },
     
     clearTokenFromURL: () => {
@@ -63,16 +108,18 @@ const TokenManager = {
             const url = new URL(window.location);
             url.searchParams.delete('token');
             window.history.replaceState({}, document.title, url.pathname);
-            console.log('🧹 Token cleared from URL');
+            DebugLogger.log('Token cleared from URL');
         }
     }
 };
 
-// Enhanced API request with better error handling
 const makeAuthenticatedRequest = async (endpoint, options = {}) => {
+    DebugLogger.log('Making authenticated request', { endpoint });
+    
     const token = TokenManager.get();
     
     if (!token) {
+        DebugLogger.log('ERROR: No token available');
         throw new Error('NO_TOKEN');
     }
     
@@ -82,7 +129,7 @@ const makeAuthenticatedRequest = async (endpoint, options = {}) => {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         },
-        credentials: 'include' // Important for production CORS
+        credentials: 'include'
     };
     
     const finalOptions = {
@@ -94,15 +141,18 @@ const makeAuthenticatedRequest = async (endpoint, options = {}) => {
         }
     };
     
-    console.log(`🌐 Making request to: ${API_URL}${endpoint}`);
+    const fullUrl = `${API_URL}${endpoint}`;
+    DebugLogger.log('Request URL', { fullUrl });
     
     try {
-        const response = await fetch(`${API_URL}${endpoint}`, finalOptions);
+        const response = await fetch(fullUrl, finalOptions);
         
-        console.log('📡 Response status:', response.status);
-        console.log('📡 Response ok:', response.ok);
+        DebugLogger.log('Response received', { 
+            status: response.status,
+            ok: response.ok,
+            statusText: response.statusText
+        });
         
-        // Handle different response types
         if (!response.ok) {
             let errorData;
             const contentType = response.headers.get('content-type');
@@ -113,36 +163,42 @@ const makeAuthenticatedRequest = async (endpoint, options = {}) => {
                 } else {
                     errorData = { message: await response.text() };
                 }
+                DebugLogger.log('Error response data', errorData);
             } catch (e) {
                 errorData = { message: `HTTP ${response.status} - ${response.statusText}` };
+                DebugLogger.log('Failed to parse error response', { error: e.message });
             }
             
-            // Specific error handling
             if (response.status === 401) {
-                console.log('🚫 Unauthorized - token invalid');
+                DebugLogger.log('UNAUTHORIZED - removing token');
                 TokenManager.remove();
                 throw new Error('UNAUTHORIZED');
             } else if (response.status === 403) {
-                console.log('🚫 Forbidden - access denied');
+                DebugLogger.log('FORBIDDEN');
                 throw new Error('FORBIDDEN');
             } else if (response.status === 404) {
-                console.log('❌ Not found - user/endpoint not found');
+                DebugLogger.log('NOT_FOUND');
                 throw new Error('NOT_FOUND');
             } else if (response.status >= 500) {
-                console.log('🔥 Server error');
+                DebugLogger.log('SERVER_ERROR');
                 throw new Error('SERVER_ERROR');
             }
             
             throw new Error(errorData.message || errorData.msg || `Request failed: ${response.status}`);
         }
         
-        return await response.json();
-    } catch (error) {
-        console.error('💥 Request failed:', error);
+        const data = await response.json();
+        DebugLogger.log('Request successful', { dataKeys: Object.keys(data) });
+        return data;
         
-        // Network errors
+    } catch (error) {
+        DebugLogger.log('Request failed with exception', { 
+            errorName: error.name,
+            errorMessage: error.message
+        });
+        
         if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-            console.log('🌐 Network error - possibly CORS or server down');
+            DebugLogger.log('NETWORK_ERROR detected');
             throw new Error('NETWORK_ERROR');
         }
         
@@ -150,93 +206,93 @@ const makeAuthenticatedRequest = async (endpoint, options = {}) => {
     }
 };
 
-// Enhanced authentication check
 const authenticateUser = async () => {
-    console.log('🔐 Starting enhanced authentication check...');
+    DebugLogger.log('=== AUTHENTICATION CHECK STARTED ===');
     
     try {
         const token = TokenManager.get();
         
         if (!token) {
-            console.log('❌ No token found anywhere');
+            DebugLogger.log('CRITICAL: No token found - will redirect to signin');
             throw new Error('NO_TOKEN');
         }
         
-        console.log('✅ Token found, verifying with server...');
+        DebugLogger.log('Token exists, verifying with server...');
         
         const userData = await makeAuthenticatedRequest('/me');
         
-        console.log('✅ Authentication successful:', {
-            id: userData.id,
+        DebugLogger.log('Authentication successful', {
+            userId: userData.id,
             email: userData.email,
             nickname: userData.nickname
         });
         
-        // Update UI with user data
         const nicknameElement = document.getElementById('userNickname');
         if (nicknameElement && userData.nickname) {
             nicknameElement.textContent = userData.nickname;
+            DebugLogger.log('UI updated with nickname');
         }
         
-        // Store user data for offline access
         localStorage.setItem('user', JSON.stringify(userData));
+        DebugLogger.log('=== AUTHENTICATION CHECK COMPLETED ===');
         
         return userData;
         
     } catch (error) {
-        console.error('💥 Authentication failed:', error.message);
+        DebugLogger.log('AUTHENTICATION FAILED', { error: error.message });
+        
+        // Don't redirect immediately - give time to see logs
+        const shouldRedirect = confirm(
+            `Authentication failed: ${error.message}\n\n` +
+            `Click OK to redirect to signin.\n` +
+            `Click Cancel to stay and check console logs.\n\n` +
+            `To view debug logs, open console and type: DebugLogger.showLogs()`
+        );
+        
+        if (!shouldRedirect) {
+            DebugLogger.log('User chose to stay - showing logs');
+            console.log('=== DEBUG LOGS ===');
+            DebugLogger.showLogs();
+            throw error; // Don't redirect
+        }
         
         // Handle different error types
         switch (error.message) {
             case 'NO_TOKEN':
                 alert('No authentication token found. Please sign in.');
-                window.location.href = 'signin.html';
                 break;
-                
             case 'UNAUTHORIZED':
                 alert('Your session has expired. Please sign in again.');
-                window.location.href = 'signin.html';
                 break;
-                
             case 'NOT_FOUND':
                 alert('User account not found. Please sign in again.');
                 TokenManager.remove();
-                window.location.href = 'signin.html';
                 break;
-                
             case 'NETWORK_ERROR':
-                console.log('🌐 Network issue detected');
-                // Try to use cached user data if available
                 const cachedUser = localStorage.getItem('user');
                 if (cachedUser) {
-                    console.log('📦 Using cached user data');
+                    DebugLogger.log('Using cached user data due to network error');
                     const userData = JSON.parse(cachedUser);
                     const nicknameElement = document.getElementById('userNickname');
                     if (nicknameElement && userData.nickname) {
                         nicknameElement.textContent = userData.nickname;
                     }
-                    // Show warning about network issues
                     showNetworkWarning();
                     return userData;
                 }
-                alert('Cannot connect to server. Please check your internet connection and try again.');
+                alert('Cannot connect to server. Please check your internet connection.');
                 break;
-                
-            case 'SERVER_ERROR':
-                alert('Server is currently unavailable. Please try again later.');
-                break;
-                
             default:
                 alert(`Authentication error: ${error.message}`);
                 TokenManager.remove();
-                window.location.href = 'signin.html';
         }
         
+        DebugLogger.log('Redirecting to signin page');
+        window.location.href = 'signin.html';
         throw error;
     }
 };
 
-// Show network warning
 const showNetworkWarning = () => {
     const warning = document.createElement('div');
     warning.style.cssText = `
@@ -261,13 +317,13 @@ const showNetworkWarning = () => {
     }, 5000);
 };
 
-// Initialize charts with error handling
 const initializeCharts = () => {
+    DebugLogger.log('Initializing charts...');
     try {
         const activityChart = document.getElementById("activityChart");
         const moodChart = document.getElementById("moodChart");
 
-        if (activityChart) {
+        if (activityChart && typeof Chart !== 'undefined') {
             new Chart(activityChart, {
                 type: "bubble",
                 data: {
@@ -303,9 +359,10 @@ const initializeCharts = () => {
                     plugins: { legend: { display: false } }
                 }
             });
+            DebugLogger.log('Activity chart initialized');
         }
 
-        if (moodChart) {
+        if (moodChart && typeof Chart !== 'undefined') {
             new Chart(moodChart, {
                 type: "line",
                 data: {
@@ -337,39 +394,31 @@ const initializeCharts = () => {
                     plugins: { legend: { display: false } }
                 }
             });
+            DebugLogger.log('Mood chart initialized');
         }
-        
-        console.log('📊 Charts initialized successfully');
     } catch (error) {
-        console.error('📊 Chart initialization error:', error);
+        DebugLogger.log('Chart initialization error', { error: error.message });
     }
 };
 
-// Enhanced logout handler
 const handleLogout = async () => {
-    console.log('👋 Logout initiated...');
+    DebugLogger.log('Logout initiated');
     
     const token = TokenManager.get();
-    
-    // Clear local storage first
     TokenManager.remove();
     
-    // Try to call backend logout (optional, don't block on failure)
     try {
         if (token) {
             await makeAuthenticatedRequest('/logout', { method: 'POST' });
-            console.log('✅ Backend logout successful');
+            DebugLogger.log('Backend logout successful');
         }
     } catch (error) {
-        console.log('⚠️ Backend logout failed (non-critical):', error.message);
+        DebugLogger.log('Backend logout failed (non-critical)', { error: error.message });
     }
     
-    // Always redirect to signin
-    console.log('🚀 Redirecting to signin...');
     window.location.href = 'signin.html';
 };
 
-// Enhanced menu toggle
 const initializeMenuToggle = () => {
     const menuToggle = document.getElementById("menuToggle");
     const menuList = document.getElementById("menuList");
@@ -378,70 +427,54 @@ const initializeMenuToggle = () => {
         menuToggle.addEventListener("click", () => {
             menuList.classList.toggle("show");
         });
-        console.log('📱 Menu toggle initialized');
+        DebugLogger.log('Menu toggle initialized');
     }
 };
 
-// Main initialization
 document.addEventListener("DOMContentLoaded", async () => {
-    console.log('🚀 Dashboard initialization started');
-    console.log('🌍 Current URL:', window.location.href);
-    console.log('🔧 User Agent:', navigator.userAgent);
+    DebugLogger.log('=== DASHBOARD INITIALIZATION STARTED ===');
+    DebugLogger.log('Current URL', { url: window.location.href });
     
     try {
-        // Initialize UI components first
         initializeMenuToggle();
         
-        // Initialize charts
         if (typeof Chart !== 'undefined') {
             initializeCharts();
         } else {
-            console.log('⚠️ Chart.js not loaded, charts will not be available');
+            DebugLogger.log('Chart.js not loaded');
         }
         
-        // Authenticate user (this is the critical part)
         await authenticateUser();
         
-        // Setup logout handler
         const logoutBtn = document.getElementById("logoutBtn");
         if (logoutBtn) {
             logoutBtn.addEventListener("click", (e) => {
                 e.preventDefault();
                 handleLogout();
             });
-            console.log('👋 Logout handler attached');
+            DebugLogger.log('Logout handler attached');
         }
         
-        console.log('✅ Dashboard initialization completed successfully');
+        DebugLogger.log('=== DASHBOARD INITIALIZATION COMPLETED ===');
         
     } catch (error) {
-        console.error('💥 Dashboard initialization failed:', error);
-        // Error handling is already done in authenticateUser
+        DebugLogger.log('Dashboard initialization failed', { error: error.message });
     }
 });
 
-// Handle page visibility changes (helps with token refresh)
-document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) {
-        console.log('👁️ Page became visible, checking authentication...');
-        // Re-authenticate when page becomes visible (helps catch expired tokens)
-        setTimeout(authenticateUser, 100);
-    }
-});
+// Prevent redirect loop by showing alert
+let redirectCount = parseInt(sessionStorage.getItem('redirectCount') || '0');
+if (redirectCount > 2) {
+    DebugLogger.log('REDIRECT LOOP DETECTED', { count: redirectCount });
+    alert('Redirect loop detected! Check console logs: DebugLogger.showLogs()');
+    sessionStorage.setItem('redirectCount', '0');
+} else {
+    sessionStorage.setItem('redirectCount', (redirectCount + 1).toString());
+}
 
-// Global error handler for unhandled promise rejections
-window.addEventListener('unhandledrejection', (event) => {
-    console.error('🚨 Unhandled promise rejection:', event.reason);
-    
-    // If it's an auth-related error, handle gracefully
-    if (event.reason && event.reason.message) {
-        const message = event.reason.message.toLowerCase();
-        if (message.includes('unauthorized') || message.includes('token') || message.includes('auth')) {
-            console.log('🔐 Auth-related unhandled rejection, cleaning up...');
-            TokenManager.remove();
-            window.location.href = 'signin.html';
-        }
-    }
-    
-    event.preventDefault(); // Prevent the error from going to console
+// Clear redirect count on successful load
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        sessionStorage.setItem('redirectCount', '0');
+    }, 2000);
 });
