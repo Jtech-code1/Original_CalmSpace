@@ -1,5 +1,7 @@
 ```css
-/* Reset and Base Styles */
+/* ----------------------------
+   Reset & Base Styles
+----------------------------- */
 * {
   margin: 0;
   padding: 0;
@@ -22,7 +24,9 @@ ul {
   list-style: none;
 }
 
-/* Layout */
+/* ----------------------------
+   Layout
+----------------------------- */
 .container {
   display: flex;
   min-height: 100vh;
@@ -37,6 +41,7 @@ ul {
   flex-direction: column;
   justify-content: space-between;
   transition: transform 0.3s ease-in-out;
+  z-index: 999;
 }
 
 .sidebar-header {
@@ -61,11 +66,14 @@ ul {
   background: none;
   border: none;
   color: #fff;
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   cursor: pointer;
-  display: none; /* hidden on desktop */
+  display: none; /* Hidden on desktop */
 }
 
+/* ----------------------------
+   Sidebar Navigation
+----------------------------- */
 .sidebar nav ul {
   padding: 1rem;
 }
@@ -73,22 +81,20 @@ ul {
 .sidebar nav ul li {
   padding: 0.8rem 1rem;
   margin-bottom: 0.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  cursor: pointer;
   border-radius: 8px;
   transition: background 0.3s ease;
 }
 
-.sidebar nav ul li:hover,
-.sidebar nav ul li.active {
+.sidebar nav ul li.active,
+.sidebar nav ul li:hover {
   background: #374151;
 }
 
-.sidebar nav ul li img {
-  width: 18px;
-  height: 18px;
+.sidebar nav ul li a {
+  display: block;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 500;
 }
 
 .sidebar-footer {
@@ -116,7 +122,9 @@ ul {
   background: #dc2626;
 }
 
-/* Main Content */
+/* ----------------------------
+   Main Content
+----------------------------- */
 .main {
   flex: 1;
   padding: 1.5rem;
@@ -222,26 +230,56 @@ ul {
   border-bottom: none;
 }
 
-/* Responsive */
+/* ----------------------------
+   Responsive Styles
+----------------------------- */
 @media (max-width: 768px) {
+  /* Sidebar becomes hidden by default */
   .sidebar {
     position: fixed;
     top: 0;
     left: 0;
     transform: translateX(-100%);
-    z-index: 1000;
+    width: 220px;
+    height: 100vh;
+    background: #1f2937;
   }
 
+  /* Show when toggled */
   .sidebar.show {
     transform: translateX(0);
   }
 
+  /* Hamburger visible on mobile */
   .hamburger {
     display: block;
   }
 
+  /* Mobile Nav List */
+  #menuList {
+    display: none;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  #menuList.show {
+    display: flex;
+    margin-top: 1rem;
+  }
+
+  .sidebar nav ul li {
+    margin-bottom: 0.5rem;
+  }
+
+  .sidebar nav ul li a {
+    padding: 0.6rem;
+    background: #374151;
+    border-radius: 6px;
+    text-align: left;
+  }
+
   .main {
+    flex: 1;
     padding: 1rem;
   }
 }
-
