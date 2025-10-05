@@ -76,7 +76,7 @@
     <div class="bottom-grid">
       <div class="card calendar-card">
         <div class="calendar-header">
-          <span class="card-title" id="calendarMonth">February 2022</span>
+          <span class="card-title" id="calendarMonth">October 2025</span>
           <div class="calendar-nav">
             <button onclick="changeMonth(-1)">←</button>
             <button onclick="changeMonth(1)">→</button>
@@ -178,8 +178,12 @@
       }
     ];
 
-    let currentMonth = 1;
-    let currentYear = 2022;
+    // Get current date
+    const today = new Date();
+    let currentMonth = today.getMonth();
+    let currentYear = today.getFullYear();
+    let currentDay = today.getDate();
+    
     let currentAudio = null;
     let currentPlayingIndex = -1;
 
@@ -444,6 +448,7 @@
       const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
       const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
 
+      // Add previous month's days
       for (let i = firstDay - 1; i >= 0; i--) {
         const day = document.createElement('div');
         day.className = 'calendar-day other-month';
@@ -451,12 +456,19 @@
         calendar.appendChild(day);
       }
 
+      // Add current month's days
       for (let i = 1; i <= daysInMonth; i++) {
         const day = document.createElement('div');
         day.className = 'calendar-day';
         day.textContent = i;
         
-        if (i === 24) day.classList.add('selected');
+        // Check if this is today's date in the current month/year being displayed
+        const todayDate = new Date();
+        if (i === todayDate.getDate() && 
+            currentMonth === todayDate.getMonth() && 
+            currentYear === todayDate.getFullYear()) {
+          day.classList.add('selected');
+        }
         
         calendar.appendChild(day);
       }
