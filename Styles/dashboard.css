@@ -44,6 +44,7 @@
       font-size: 1.5rem;
       cursor: pointer;
       color: #4CAF50;
+      display:none;
     }
 
     .header-title {
@@ -531,6 +532,9 @@
       .mobile-menu {
         display: block;
       }
+       .menu-btn {
+        display: block;
+  }
 
       .session-item {
         flex-wrap: wrap;
