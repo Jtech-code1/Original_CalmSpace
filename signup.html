@@ -5,8 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CalmSpace_Signup</title>
     <link rel="stylesheet" href="Styles/signup.css">
-      <link rel="icon" type="image/jpeg" href="https://i.postimg.cc/g0SwLJLZ/Calmspace-Logo.png">
-
+    <link rel="icon" type="image/jpeg" href="https://i.postimg.cc/g0SwLJLZ/Calmspace-Logo.png">
+    <style>
+        .error-message {
+            display: none;
+            color: #ef4444;
+            font-size: 11px;
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+    </style>
 </head>
 <body>
     <div class="sign_section">
@@ -29,61 +46,63 @@
                     <h2>24/7</h2>
                     <p>Community support</p>
                 </div>
-
             </div><br><br><br><br><br><br><br><br><br><br><br><br>
         </div>
         <div class="sections sig">
             <h1 class="start_text1">Sign Up</h1>
-            <!-- Add id to the form registerForm and to the fullname and email input button -->
+            
             <form action="" id="registerForm"> 
-                <label for="">Fullname</label><br>
-                <input type="text" name="" id="fullName" placeholder="Enter your text here" required><br><br><br>
-                <label for="">Email</label><br>
-                <input type="text" name="" id="email" placeholder="Enter your text here" required><br><br><br>
-                <label for="password">Password</label><br>
-<div class="password-container">
-  <input type="password" id="password" placeholder="Enter your password" required>
-  
-  <!-- Eye icon -->
-  <span class="toggle-icon" onclick="togglePassword()">👁️</span>
-</div><br><br><br>
-<!-- Removed the anchor button and changed the button type to submit -->
-<input class="create_button" type="submit" value="Create Account"><br><br>
-<!-- The form should close here -->
-</form>
+                <div class="form-group">
+                    <label for="fullName">Fullname</label>
+                    <input type="text" name="" id="fullName" placeholder="Enter your text here" required>
+                    <div class="error-message" id="fullNameError"></div>
+                </div>
 
-<div class="divider">
-    Or
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="text" name="" id="email" placeholder="Enter your text here" required>
+                    <div class="error-message" id="emailError"></div>
+                </div>
 
-</div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="password-container">
+                        <input type="password" id="password" placeholder="Enter your password" required>
+                        <span class="toggle-icon" onclick="togglePassword()">👁️</span>
+                    </div>
+                    <div class="error-message" id="passwordError"></div>
+                </div>
 
+                <input class="create_button" type="submit" value="Create Account"><br><br>
+            </form>
 
+            <div class="divider">Or</div>
 
-<a href="https://calmspace-api.onrender.com/api/auth/google" class="google-btn">
-   <img src="https://i.postimg.cc/cJbXJxFJ/googlr-removebg-preview.png" alt="Google Logo" style="height:30px">
-   <span>Continue with Google</span>
-</a>
+            <a href="https://calmspace-api.onrender.com/api/auth/google" class="google-btn">
+                <img src="https://i.postimg.cc/cJbXJxFJ/googlr-removebg-preview.png" alt="Google Logo" style="height:30px">
+                <span>Continue with Google</span>
+            </a>
 
-
-<div class="sign_below">
-    <p>Already have an Account? <a href="signin.html">Sign in</a></p>
-</div>
-
-
-<script>
-  function togglePassword() {
-    const passwordField = document.getElementById("password");
-    if (passwordField.type === "password") {
-      passwordField.type = "text";
-    } else {
-      passwordField.type = "password";
-    }
-  }
-</script>
-<script src="js/signup.js"></script>
-
+            <div class="sign_below">
+                <p>Already have an Account? <a href="signin.html">Sign in</a></p>
+            </div>
         </div>
-
     </div>
+
+    <script>
+        function togglePassword() {
+            const passwordField = document.getElementById("password");
+            const toggleIcon = document.querySelector('.toggle-icon');
+            
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                toggleIcon.textContent = "🙈";
+            } else {
+                passwordField.type = "password";
+                toggleIcon.textContent = "👁️";
+            }
+        }
+    </script>
+    <script src="js/signup.js"></script>
 </body>
 </html>

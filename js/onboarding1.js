@@ -1,4 +1,18 @@
-const API_URL = "https://calmspace-api.onrender.com/api/auth" ;
+const API_URL = (() => {
+    const hostname = window.location.hostname;
+    const protocol = window.location.protocol;
+    
+    const isLocal = hostname === 'localhost' || 
+                   hostname === '127.0.0.1' || 
+                   hostname === '0.0.0.0' ||
+                   hostname.startsWith('192.168.') ||
+                   hostname.endsWith('.local') ||
+                   protocol === 'file:';
+    
+    return isLocal 
+        ? "http://localhost:5000/api/auth"  
+        : "https://calmspace-api.onrender.com/api/auth";
+})();
 
 // Handle token from Google OAuth redirect
 document.addEventListener('DOMContentLoaded', function() {
