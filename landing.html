@@ -12,24 +12,46 @@
 </head>
 <body>
   <!-- Navbar -->
-<div class="navbar" data-aos="fade-down">
-  <div class="logo">
-    <img src="https://i.postimg.cc/Kvg2rtgc/Calmspace-Logo.png" alt="Calmspace Logo">
-  </div>
+  <div class="navbar" data-aos="fade-down">
+    <div class="logo">
+      <img src="https://i.postimg.cc/Kvg2rtgc/Calmspace-Logo.png" alt="Calmspace Logo">
+    </div>
 
-  <div class="nav-links">
-    <span class="active"><a href="">Home</a></span>
-    <a href="">Features</a>
-    <a href="">Pricing</a>
-    <a href="">About Us</a>
-    <a href="">Contact</a>
-  </div>
+    <!-- Desktop Navigation -->
+    <div class="nav-links">
+      <span class="active"><a href="">Home</a></span>
+      <a href="">Features</a>
+      <a href="">Pricing</a>
+      <a href="">About Us</a>
+      <a href="">Contact</a>
+    </div>
 
-  <div class="auth-buttons">
-    <a href="signin.html"><input type="button" value="Login"></a>
-    <a href="signup.html"><input type="submit" value="Sign Up"></a>
+    <!-- Desktop Auth Buttons -->
+    <div class="auth-buttons">
+      <a href="signin.html"><input type="button" value="Login"></a>
+      <a href="signup.html"><input type="submit" value="Sign Up"></a>
+    </div>
+
+    <!-- Hamburger Menu Icon -->
+    <div class="menu-toggle" id="menuToggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <!-- Mobile Dropdown Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="" class="active">Home</a>
+      <a href="">Features</a>
+      <a href="">Pricing</a>
+      <a href="">About Us</a>
+      <a href="">Contact</a>
+      <div class="mobile-auth">
+        <a href="signin.html"><input type="button" value="Login"></a>
+        <a href="signup.html"><input type="submit" value="Sign Up"></a>
+      </div>
+    </div>
   </div>
-</div>
 
   <!-- Header Section -->
   <div class="header-section">
@@ -141,9 +163,36 @@
       once: true
     });
 
-    
+    // Hamburger Menu Toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
 
-    
+    if (menuToggle && mobileMenu) {
+      menuToggle.addEventListener('click', function() {
+        menuToggle.classList.toggle('active');
+        mobileMenu.classList.toggle('active');
+      });
+
+      // Close menu when clicking on a link
+      const mobileLinks = mobileMenu.querySelectorAll('a');
+      mobileLinks.forEach(link => {
+        link.addEventListener('click', function() {
+          menuToggle.classList.remove('active');
+          mobileMenu.classList.remove('active');
+        });
+      });
+
+      // Close menu when clicking outside
+      document.addEventListener('click', function(event) {
+        const isClickInsideMenu = mobileMenu.contains(event.target);
+        const isClickOnToggle = menuToggle.contains(event.target);
+        
+        if (!isClickInsideMenu && !isClickOnToggle && mobileMenu.classList.contains('active')) {
+          menuToggle.classList.remove('active');
+          mobileMenu.classList.remove('active');
+        }
+      });
+    }
   </script>
 </body>
 </html>
