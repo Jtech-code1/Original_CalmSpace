@@ -17,19 +17,12 @@
     <img src="https://i.postimg.cc/Kvg2rtgc/Calmspace-Logo.png" alt="Calmspace Logo">
   </div>
 
-   <!-- HAMBURGER ICON -->
-  <div class="menu-toggle" id="menu-toggle">
-    <span></span>
-    <span></span>
-    <span></span>
-  </div>
-
   <div class="nav-links">
     <span class="active"><a href="">Home</a></span>
-    <a href="features.html">Features</a>
-    <a href="pricing.html">Pricing</a>
-    <a href="the_about.html">About Us</a>
-    <a href="the_contact.html">Contact</a>
+    <a href="">Features</a>
+    <a href="">Pricing</a>
+    <a href="">About Us</a>
+    <a href="">Contact</a>
   </div>
 
   <div class="auth-buttons">
@@ -141,22 +134,16 @@
   </footer>
 
   <!-- AOS Script -->
- <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script>
-  // Initialize AOS
-  AOS.init({
-    duration: 1000,
-    once: true
-  });
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 1000,
+      once: true
+    });
 
-  // HAMBURGER MENU FUNCTIONALITY
-  const menuToggle = document.getElementById('menu-toggle');
-  const navLinks = document.getElementById('nav-links');
+    
 
-  menuToggle.addEventListener('click', () => {
-    menuToggle.classList.toggle('active');
-    navLinks.classList.toggle('active');
-  });
-</script>
+    
+  </script>
 </body>
 </html>
