@@ -335,9 +335,9 @@ footer a {
     padding: 15px 20px;
   }
 
-  .logo img {
+  /* .logo img {
     height: 45px;
-  }
+  } */
 
   .header-section {
     flex-direction: column;
