@@ -68,6 +68,9 @@ body {
 .active {
   color: green;
 }
+.active a{
+  color:green;
+}
 
 /* ===== REVEAL ANIMATION ===== */
 .reveal {
