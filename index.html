@@ -6,30 +6,37 @@
   <title>Calmspace Landing Page</title>
   <link rel="stylesheet" href="Styles/landing.css">
   <link rel="icon" type="image/png" href="https://i.postimg.cc/g0SwLJLZ/Calmspace-Logo.png">
-
-  <!-- AOS Animation Library -->
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
 <body>
   <!-- Navbar -->
-<div class="navbar" data-aos="fade-down">
-  <div class="logo">
-    <img src="https://i.postimg.cc/Kvg2rtgc/Calmspace-Logo.png" alt="Calmspace Logo">
-  </div>
+  <div class="navbar" data-aos="fade-down">
+    <div class="logo">
+      <img src="https://i.postimg.cc/Kvg2rtgc/Calmspace-Logo.png" alt="Calmspace Logo">
+    </div>
 
-  <div class="nav-links">
-    <span class="active"><a href="">Home</a></span>
-    <a href="features.html">Features</a>
-    <a href="pricing.html">Pricing</a>
-    <a href="the_about.html">About Us</a>
-    <a href="the_contact.html">Contact</a>
-  </div>
+    <!-- Hamburger Icon -->
+    <div class="hamburger" id="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
 
-  <div class="auth-buttons">
-    <a href="signin.html"><input type="button" value="Login"></a>
-    <a href="signup.html"><input type="submit" value="Sign Up"></a>
+    <!-- Navigation Menu (wraps nav-links and auth-buttons together) -->
+    <div class="nav-menu" id="navMenu">
+      <div class="nav-links">
+        <span class="active"><a href="">Home</a></span>
+        <a href="features.html">Features</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="the_about.html">About Us</a>
+        <a href="the_contact.html">Contact</a>
+      </div>
+      <div class="auth-buttons">
+        <a href="signin.html"><input type="button" value="Login"></a>
+        <a href="signup.html"><input type="submit" value="Sign Up"></a>
+      </div>
+    </div>
   </div>
-</div>
 
   <!-- Header Section -->
   <div class="header-section">
@@ -141,9 +148,14 @@
       once: true
     });
 
-    
+    // Hamburger Toggle
+    const hamburger = document.getElementById("hamburger");
+    const navMenu = document.getElementById("navMenu");
 
-    
+    hamburger.addEventListener("click", () => {
+      navMenu.classList.toggle("active");
+      hamburger.classList.toggle("active");
+    });
   </script>
 </body>
 </html>
