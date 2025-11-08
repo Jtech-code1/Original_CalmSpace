@@ -388,30 +388,46 @@ footer a {
     position: absolute;
     top: 80px;
     left: 0;
-    background-color: var(--greengrey);
     width: 100%;
-    flex-direction: column;
-    text-align: center;
-    padding: 20px 0;
+    background-color: var(--greengrey);
+    padding: 15px 0;
     border-top: 2px solid var(--green7);
     z-index: 10;
+    justify-content: center;
+    align-items: center;
   }
 
+  /* Show menu when active */
   .nav-menu.active {
     display: flex;
+    flex-direction: row; /* Side-by-side layout */
+    gap: 20px;
+    flex-wrap: wrap; /* allow wrapping on smaller screens */
   }
 
-  .nav-links {
-    flex-direction: column;
+  /* Both nav-links and auth-buttons side by side */
+  .nav-links, .auth-buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
     gap: 15px;
   }
 
+  .nav-links a {
+    font-size: 16px;
+  }
+
   .auth-buttons {
-    flex-direction: column;
-    margin-top: 20px;
     gap: 10px;
   }
+
+  .auth-buttons input {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
 }
+
 
   
 
