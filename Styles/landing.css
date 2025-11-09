@@ -24,6 +24,7 @@ body {
   font-family: sans-serif;
   overflow-x: hidden;
   background: #fff;
+  overflow-x: clip;
 }
 
 /* ===== NAVBAR ===== */
